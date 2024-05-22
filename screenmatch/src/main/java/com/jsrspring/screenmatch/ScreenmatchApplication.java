@@ -1,6 +1,8 @@
 package com.jsrspring.screenmatch;
 
+import com.jsrspring.screenmatch.model.Series;
 import com.jsrspring.screenmatch.service.APIConsumption;
+import com.jsrspring.screenmatch.service.ConvertData;
 import com.jsrspring.screenmatch.utils.config.Configuration;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -22,7 +24,7 @@ public class ScreenmatchApplication implements CommandLineRunner {
 	 * */
 	@Override
 	public void run(String... args) throws Exception {
-		String seriesName = "Game of Thrones";
+		String seriesName = "24";//"Game of Thrones";
 
 		String encodedMovieName = URLEncoder.encode(seriesName, StandardCharsets.UTF_8);
 		String seriesResultName = encodedMovieName.replace("+", "%20");
@@ -33,6 +35,12 @@ public class ScreenmatchApplication implements CommandLineRunner {
 
 		var apiConsumption = new APIConsumption();
 		var json = apiConsumption.getData(url);
-		System.out.println("Response =>" + json);
+		System.out.println("Response => " + json);
+
+		ConvertData convertData = new ConvertData();
+		var data = convertData.getData(json, Series.class);
+
+		System.out.println();
+		System.out.println("Series => " + data);
 	}
 }
