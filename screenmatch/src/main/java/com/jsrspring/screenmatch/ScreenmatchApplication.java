@@ -11,6 +11,10 @@ public class ScreenmatchApplication implements CommandLineRunner {
 		SpringApplication.run(ScreenmatchApplication.class, args);
 	}
 
+	/*
+	* Metodo que se ejecuta justo despues de que la app se inicie
+	* Note:  para saber consultar: interfaz CommandLineRunner
+	 * */
 	@Override
 	public void run(String... args) throws Exception {
 		System.out.println("Hola mundo desde Spring Framework");
