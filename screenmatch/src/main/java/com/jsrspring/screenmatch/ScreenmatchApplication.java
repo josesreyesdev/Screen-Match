@@ -1,5 +1,6 @@
 package com.jsrspring.screenmatch;
 
+import com.jsrspring.screenmatch.model.Episode;
 import com.jsrspring.screenmatch.model.Series;
 import com.jsrspring.screenmatch.service.APIConsumption;
 import com.jsrspring.screenmatch.service.ConvertData;
@@ -24,23 +25,36 @@ public class ScreenmatchApplication implements CommandLineRunner {
 	 * */
 	@Override
 	public void run(String... args) throws Exception {
-		String seriesName = "24";//"Game of Thrones";
 
-		String encodedMovieName = URLEncoder.encode(seriesName, StandardCharsets.UTF_8);
-		String seriesResultName = encodedMovieName.replace("+", "%20");
-
+        String seriesName = "24";//"Game of Thrones, 24";
+        String encodeResultName = encodeAndFormatSeriesName(seriesName);
 		String apikey = Configuration.API_KEY;
 
-		String url = "https://www.omdbapi.com/?t="+seriesResultName+"&apikey="+apikey;
+        /* Consumo de una Serie */
+		String url = "https://www.omdbapi.com/?t="+encodeResultName+"&apikey="+apikey;
 
 		var apiConsumption = new APIConsumption();
+
 		var json = apiConsumption.getData(url);
-		System.out.println("Response => " + json);
 
 		ConvertData convertData = new ConvertData();
-		var data = convertData.getData(json, Series.class);
+
+		var seriesData = convertData.getData(json, Series.class);
 
 		System.out.println();
-		System.out.println("Series => " + data);
+		System.out.println("Series => " + seriesData);
+
+        /* Consumo de una Temporada y Episodio */
+        var episode = 1;
+        url = "https://www.omdbapi.com/?t="+encodeResultName+"&season=1&episode=1&apikey="+apikey;
+        json = apiConsumption.getData(url);
+
+        var episodeData = convertData.getData(json, Episode.class);
+        System.out.println("Episode of 24 => " + episodeData);
 	}
+
+    private String encodeAndFormatSeriesName(String seriesName) {
+        String encodedMovieName = URLEncoder.encode(seriesName, StandardCharsets.UTF_8);
+        return encodedMovieName.replace("+", "%20");
+    }
 }
