@@ -5,12 +5,14 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import java.util.List;
 
-@JsonIgnoreProperties(ignoreUnknown = true) // Ignora las propiedades que no sean incuidas en mi record
-public record Series(
+@JsonIgnoreProperties(ignoreUnknown = true)
+public record Episode(
         @JsonAlias("Title") String title,
         @JsonAlias("Year") String year,
         @JsonAlias("Rated") String rated,
-        @JsonAlias("Released") String released,
+        @JsonAlias("Released") String released, // fecha de lanzamiento
+        @JsonAlias("Season") String season,
+        @JsonAlias("Episode") String episode, // num Episode
         @JsonAlias("Runtime") String runtime,
         @JsonAlias("Genre") String genre,
         @JsonAlias("Director") String director,
@@ -23,11 +25,11 @@ public record Series(
         @JsonAlias("Poster") String poster,
         @JsonAlias("Ratings") List<Rating> ratings,
         @JsonAlias("Metascore") String metascore,
-        @JsonAlias("imdbRating") String imdbRating, // evaluation
+        @JsonAlias("imdbRating") String imdbRating, // evaluacion
         @JsonAlias("imdbVotes") String imdbVotes,
         @JsonAlias("imdbID") String imdbID,
+        @JsonAlias("seriesID") String seriesID,
         @JsonAlias("Type") String type,
-        @JsonAlias("totalSeasons") String totalSeasons, // temporadas
-        @JsonAlias("Response") boolean response
+        @JsonAlias("Response") String response
 ) {
 }
