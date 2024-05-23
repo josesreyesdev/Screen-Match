@@ -12,7 +12,7 @@ public record Episode(
         @JsonAlias("Rated") String rated,
         @JsonAlias("Released") String released, // fecha de lanzamiento
         @JsonAlias("Season") String season,
-        @JsonAlias("Episode") String episode, // num Episode
+        @JsonAlias("Episode") Integer episode, // num Episode
         @JsonAlias("Runtime") String runtime,
         @JsonAlias("Genre") String genre,
         @JsonAlias("Director") String director,
