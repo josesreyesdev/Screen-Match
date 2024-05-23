@@ -27,7 +27,7 @@ public class MenuMain {
         var seriesName = scanner.nextLine();
         var resultSeriesName = encodeAndFormatSeriesName(seriesName);
 
-        String url = BASE_URL+resultSeriesName+"&apikey="+apiKey;
+        String url = BASE_URL + resultSeriesName + "&apikey=" + apiKey;
         var json = apiConsumption.getData(url);
         var seriesData = convertData.getData(json, Series.class);
         System.out.println();
@@ -35,13 +35,22 @@ public class MenuMain {
 
         List<Season> seasons = new ArrayList<>();
         for (int i = 1; i <= seriesData.totalSeasons(); i++) {
-            url = BASE_URL+resultSeriesName+"&Season="+i+"&apikey="+apiKey;
+            url = BASE_URL + resultSeriesName + "&Season=" + i + "&apikey=" + apiKey;
             json = apiConsumption.getData(url);
             Season seasonData = convertData.getData(json, Season.class);
             seasons.add(seasonData);
         }
         System.out.println();
         seasons.forEach(System.out::println);
+
+        // Mostrar solo titulo de los episodios de las temporadas
+        System.out.println();
+        /*List<Episode> episodesSeason;
+        for (int i = 0; i < seriesData.totalSeasons(); i++) {
+            episodesSeason = seasons.get(i).episodes();
+            episodesSeason.forEach(ele -> System.out.println(ele.title()));
+        } */
+        seasons.forEach(s -> s.episodes().forEach(e -> System.out.println("Title: " + e.title() + " => Temporada: " + s.season())));
     }
 
     private String encodeAndFormatSeriesName(String seriesName) {
