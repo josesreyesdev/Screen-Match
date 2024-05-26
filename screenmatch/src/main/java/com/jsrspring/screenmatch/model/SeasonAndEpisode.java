@@ -32,40 +32,20 @@ public class SeasonAndEpisode {
         return season;
     }
 
-    public void setSeason(Integer season) {
-        this.season = season;
-    }
-
     public String getTitle() {
         return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
     }
 
     public Integer getEpisodeNumber() {
         return episodeNumber;
     }
 
-    public void setEpisodeNumber(Integer episodeNumber) {
-        this.episodeNumber = episodeNumber;
-    }
-
     public Double getEvaluation() {
         return evaluation;
     }
 
-    public void setEvaluation(Double evaluation) {
-        this.evaluation = evaluation;
-    }
-
     public LocalDate getReleaseDate() {
         return releaseDate;
-    }
-
-    public void setReleaseDate(LocalDate releaseDate) {
-        this.releaseDate = releaseDate;
     }
 
     @Override
@@ -74,6 +54,6 @@ public class SeasonAndEpisode {
                 ", title=" + title +
                 ", episodeNumber=" + episodeNumber +
                 ", evaluation=" + evaluation +
-                ", releaseDate=" + releaseDate ;
+                ", releaseDate=" + releaseDate;
     }
 }
