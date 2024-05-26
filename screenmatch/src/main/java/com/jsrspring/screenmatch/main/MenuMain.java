@@ -1,6 +1,7 @@
 package com.jsrspring.screenmatch.main;
 
 import com.jsrspring.screenmatch.model.Episode;
+import com.jsrspring.screenmatch.model.SeasonAndEpisode;
 import com.jsrspring.screenmatch.model.Season;
 import com.jsrspring.screenmatch.model.Series;
 import com.jsrspring.screenmatch.service.APIConsumption;
@@ -66,6 +67,15 @@ public class MenuMain {
                 .sorted(Comparator.comparing(Episode::evaluation).reversed())
                 .limit(5)
                 .forEach(System.out::println);
+
+        // convert data to type SeasonAndEpisode
+        List<SeasonAndEpisode> seasonAndEpisodeList = seasons.stream()
+                .flatMap(s -> s.episodes().stream()
+                        .map(e -> new SeasonAndEpisode(s.season(), e))
+                )
+                .collect(Collectors.toList());
+
+        seasonAndEpisodeList.forEach(System.out::println);
     }
 
     private String encodeAndFormatSeriesName(String seriesName) {
