@@ -51,7 +51,7 @@ public class ScreenmatchApplication implements CommandLineRunner {
 
                 // Consumo de un Episodio
                 Episode episodeData = getEpisodeData(encodeResultName, "1", "1");
-                System.out.println("Episode of 24 => " + episodeData);
+                System.out.println("Episode of " + seriesName + " => " + episodeData);
 
                 // Consumo de Temporadas
                 List<Season> seasons = getSeasonsData(encodeResultName, seriesData.totalSeasons());
@@ -63,7 +63,7 @@ public class ScreenmatchApplication implements CommandLineRunner {
                 main.showMenu();
 
                 System.out.println();
-                System.out.println("Ingresa 'exit' para terminar, de lo contrario ingrese cualquier otra letra.");
+                System.out.println("Ingresa 'exit' para terminar ó ingrese cualquier otra letra para hacer nueva solicitud");
                 String exit = scanner.nextLine();
                 if (exit.equalsIgnoreCase("Exit")) {
                     break;
