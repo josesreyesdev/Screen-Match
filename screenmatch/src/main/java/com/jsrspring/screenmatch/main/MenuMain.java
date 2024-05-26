@@ -10,6 +10,8 @@ import com.jsrspring.screenmatch.utils.config.Configuration;
 
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -76,6 +78,25 @@ public class MenuMain {
                 .collect(Collectors.toList());
 
         seasonAndEpisodeList.forEach(System.out::println);
+
+        // Busqueda de episodios por x año
+        System.out.println();
+        System.out.println("Ingresa el año del cual deseas ver el episodio");
+        var year = scanner.nextInt();
+        scanner.nextLine();
+
+        LocalDate searchDate = LocalDate.of(year, 1, 1);
+
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        seasonAndEpisodeList.stream()
+                .filter(e -> e.getReleaseDate() != null && e.getReleaseDate().isAfter(searchDate))
+                .forEach(e -> System.out.println(
+                        "Temporada=" + e.getSeason() +
+                                ", Titulo=" + e.getTitle() +
+                                ", Episodio=" + e.getEpisodeNumber() +
+                                ", Evaluacion=" + e.getEvaluation() +
+                                ", Fecha de Lanzamiento = " + e.getReleaseDate().format(dtf)
+                ));
     }
 
     private String encodeAndFormatSeriesName(String seriesName) {
