@@ -25,7 +25,7 @@ public record Episode(
         @JsonAlias("Poster") String poster,
         @JsonAlias("Ratings") List<Rating> ratings,
         @JsonAlias("Metascore") String metascore,
-        @JsonAlias("imdbRating") String imdbRating, // evaluacion
+        @JsonAlias("imdbRating") String evaluation, // evaluacion
         @JsonAlias("imdbVotes") String imdbVotes,
         @JsonAlias("imdbID") String imdbID,
         @JsonAlias("seriesID") String seriesID,
