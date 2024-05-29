@@ -66,7 +66,11 @@ public class MenuMain {
         System.out.println("Top 5 episodes of: " + seriesName);
         episodes.stream()
                 .filter(e -> !e.evaluation().equalsIgnoreCase("N/A"))
+                .peek(e -> System.out.println("Primero: filtro (N/A) " + e))
                 .sorted(Comparator.comparing(Episode::evaluation).reversed())
+                .peek(e -> System.out.println("Segundo: ordenando de mayor a menor " + e))
+                .map(e -> e.title().toUpperCase())
+                .peek(e -> System.out.println("Tercero: filtro del titulo a mayusculas " + e))
                 .limit(5)
                 .forEach(System.out::println);
 
