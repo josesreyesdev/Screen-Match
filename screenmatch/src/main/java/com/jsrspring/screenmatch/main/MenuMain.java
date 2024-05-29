@@ -12,11 +12,9 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
 import java.util.stream.Collectors;
+
 
 public class MenuMain {
 
@@ -28,40 +26,70 @@ public class MenuMain {
     private static final String apiKey = Configuration.API_KEY;
 
     public void showMenu() {
-
-        System.out.println("Ingresa el nombre de la serie a consultar: ");
-        var seriesName = scanner.nextLine();
-        var resultSeriesName = encodeAndFormatSeriesName(seriesName);
+        String seriesName = getUserInput("Ingresa el nombre de la serie a consultar: ");
+        String resultSeriesName = encodeAndFormatSeriesName(seriesName);
 
         String url = BASE_URL + resultSeriesName + "&apikey=" + apiKey;
-        var json = apiConsumption.getData(url);
-        var seriesData = convertData.getData(json, Series.class);
-        System.out.println();
-        System.out.println(seriesData);
+        Series seriesData = fetchSeriesData(url);
+        System.out.println("\n" + seriesData);
 
-        List<Season> seasons = new ArrayList<>();
-        for (int i = 1; i <= seriesData.totalSeasons(); i++) {
-            url = BASE_URL + resultSeriesName + "&Season=" + i + "&apikey=" + apiKey;
-            json = apiConsumption.getData(url);
-            Season seasonData = convertData.getData(json, Season.class);
-            seasons.add(seasonData);
-        }
+        List<Season> seasons = fetchSeasonsData(resultSeriesName, seriesData.totalSeasons());
         System.out.println();
         seasons.forEach(System.out::println);
 
-        // Mostrar titulo de los episodios de las temporadas
+        displayEpisodeTitles(seasons);
+
+        List<Episode> episodes = convertToEpisodeList(seasons);
+
+        displayTop5Episodes(episodes, seriesName);
+
+        List<SeasonAndEpisode> seasonAndEpisodeList = convertToSeasonAndEpisodeList(seasons);
+
+        searchEpisodesByYear(seasonAndEpisodeList);
+
+        searchEpisodeByTitle(seasonAndEpisodeList);
+    }
+
+    private String getUserInput(String message) {
+        System.out.println(message);
+        return scanner.nextLine();
+    }
+
+    private String encodeAndFormatSeriesName(String seriesName) {
+        String encodedSeriesName = URLEncoder.encode(seriesName, StandardCharsets.UTF_8);
+        return encodedSeriesName.replace("+", "%20");
+    }
+
+    private Series fetchSeriesData(String url) {
+        String json = apiConsumption.getData(url);
+        return convertData.getData(json, Series.class);
+    }
+
+    private List<Season> fetchSeasonsData(String seriesName, int totalSeasons) {
+        List<Season> seasons = new ArrayList<>();
+        for (int i = 1; i <= totalSeasons; i++) {
+            String url = BASE_URL + seriesName + "&Season=" + i + "&apikey=" + apiKey;
+            String json = apiConsumption.getData(url);
+            Season seasonData = convertData.getData(json, Season.class);
+            seasons.add(seasonData);
+        }
+        return seasons;
+    }
+
+    private void displayEpisodeTitles(List<Season> seasons) {
         System.out.println();
         seasons.forEach(s -> s.episodes().forEach(e ->
                 System.out.println("Title: " + e.title() + " => Temporada: " + s.season())
         ));
+    }
 
-        // Convertir toda la info a una lista de Episode
-        List<Episode> episodes = seasons.stream()
-                .flatMap(season -> season.episodes().stream()) // convierte cada teporada a episodios
-                //.toList(); // hacemos una lista inmutable
-                .collect(Collectors.toList()); // con collect hacemos una lista mutable
+    private List<Episode> convertToEpisodeList(List<Season> seasons) {
+        return seasons.stream()
+                .flatMap(season -> season.episodes().stream())
+                .collect(Collectors.toList());
+    }
 
-        // Top 5 episodes
+    private void displayTop5Episodes(List<Episode> episodes, String seriesName) {
         System.out.println();
         System.out.println("Top 5 episodes of: " + seriesName);
         episodes.stream()
@@ -73,20 +101,20 @@ public class MenuMain {
                 .peek(e -> System.out.println("Tercero: filtro del titulo a mayusculas " + e))
                 .limit(5)
                 .forEach(System.out::println);
+    }
 
-        // convert data to type SeasonAndEpisode
-        List<SeasonAndEpisode> seasonAndEpisodeList = seasons.stream()
+    private List<SeasonAndEpisode> convertToSeasonAndEpisodeList(List<Season> seasons) {
+        return seasons.stream()
                 .flatMap(s -> s.episodes().stream()
                         .map(e -> new SeasonAndEpisode(s.season(), e))
                 )
                 .collect(Collectors.toList());
+    }
 
-        seasonAndEpisodeList.forEach(System.out::println);
-
-        // Busqueda de episodios por x año
+    private void searchEpisodesByYear(List<SeasonAndEpisode> seasonAndEpisodeList) {
         System.out.println();
         System.out.println("Ingresa el año del cual deseas ver el episodio");
-        var year = scanner.nextInt();
+        int year = scanner.nextInt();
         scanner.nextLine();
 
         LocalDate searchDate = LocalDate.of(year, 1, 1);
@@ -103,8 +131,21 @@ public class MenuMain {
                 ));
     }
 
-    private String encodeAndFormatSeriesName(String seriesName) {
-        String encodedSeriesName = URLEncoder.encode(seriesName, StandardCharsets.UTF_8);
-        return encodedSeriesName.replace("+", "%20");
+    private void searchEpisodeByTitle(List<SeasonAndEpisode> seasonAndEpisodeList) {
+        System.out.println();
+        System.out.println("Ingresa el titulo del episodio que deseas ver:");
+        String searchByPartOfTitle = scanner.nextLine();
+
+        Optional<SeasonAndEpisode> searchByTitle = seasonAndEpisodeList.stream()
+                .filter(e -> e.getTitle().toUpperCase().contains(searchByPartOfTitle.toUpperCase()))
+                .findFirst();
+
+        if (searchByTitle.isPresent()) {
+            System.out.println("Episodio encontrado:");
+            System.out.println("Title: " + searchByTitle.get().getTitle());
+            System.out.println("All data: " + searchByTitle.get());
+        } else {
+            System.out.println("Episodio no encontrado para: " + searchByPartOfTitle);
+        }
     }
 }
