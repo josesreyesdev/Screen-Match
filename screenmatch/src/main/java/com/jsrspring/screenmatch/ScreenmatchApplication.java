@@ -41,7 +41,7 @@ public class ScreenmatchApplication implements CommandLineRunner {
             //24, Game of Thrones, Vikings, Spartacus
             while (true) {
                 System.out.println();
-                System.out.println("Ingresa el nombre de la serie a consultar: ");
+                /*System.out.println("Ingresa el nombre de la serie a consultar: ");
                 var seriesName = scanner.nextLine();
                 String encodeResultName = encodeAndFormatSeriesName(seriesName);
 
@@ -55,7 +55,7 @@ public class ScreenmatchApplication implements CommandLineRunner {
 
                 // Consumo de Temporadas
                 List<Season> seasons = getSeasonsData(encodeResultName, seriesData.totalSeasons());
-                seasons.forEach(System.out::println);
+                seasons.forEach(System.out::println); */
 
                 /* OTRA SOLICITUD */
                 System.out.println();
