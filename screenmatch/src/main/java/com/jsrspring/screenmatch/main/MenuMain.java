@@ -37,19 +37,21 @@ public class MenuMain {
         System.out.println();
         seasons.forEach(System.out::println);
 
-        /*displayEpisodeTitles(seasons);
+        displayEpisodeTitles(seasons);
 
         List<Episode> episodes = convertToEpisodeList(seasons);
 
-        displayTop5Episodes(episodes, seriesName); */
+        displayTop5Episodes(episodes, seriesName);
 
         List<SeasonAndEpisode> seasonAndEpisodeList = convertToSeasonAndEpisodeList(seasons);
 
-        /*searchEpisodesByYear(seasonAndEpisodeList);
+        searchEpisodesByYear(seasonAndEpisodeList);
 
-        searchEpisodeByTitle(seasonAndEpisodeList); */
+        searchEpisodeByTitle(seasonAndEpisodeList);
 
         evaluationPerSeason(seasonAndEpisodeList);
+
+        statistics(seasonAndEpisodeList);
     }
 
     private String getUserInput(String message) {
@@ -142,6 +144,7 @@ public class MenuMain {
                 .filter(e -> e.getTitle().toUpperCase().contains(searchByPartOfTitle.toUpperCase()))
                 .findFirst();
 
+        System.out.println();
         if (searchByTitle.isPresent()) {
             System.out.println("Episodio encontrado:");
             System.out.println("Title: " + searchByTitle.get().getTitle());
@@ -161,6 +164,19 @@ public class MenuMain {
                         )
                 );
 
+        System.out.println();
         System.out.println("Evaluaciones: " + evaluationsSeason);
+    }
+
+    private void statistics(List<SeasonAndEpisode> seasonAndEpisodes) {
+        DoubleSummaryStatistics est = seasonAndEpisodes.stream()
+                .filter(e -> e.getEvaluation() > 0.0)
+                .collect(Collectors.summarizingDouble(SeasonAndEpisode::getEvaluation));
+
+        System.out.println();
+        System.out.println("Estadisticas => " + est);
+        System.out.println("Media Evaluaciones => " + est.getAverage());
+        System.out.println("Mejor evaluado => " + est.getMax());
+        System.out.println("Peor evaluado => " + est.getMin());
     }
 }
