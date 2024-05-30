@@ -37,17 +37,19 @@ public class MenuMain {
         System.out.println();
         seasons.forEach(System.out::println);
 
-        displayEpisodeTitles(seasons);
+        /*displayEpisodeTitles(seasons);
 
         List<Episode> episodes = convertToEpisodeList(seasons);
 
-        displayTop5Episodes(episodes, seriesName);
+        displayTop5Episodes(episodes, seriesName); */
 
         List<SeasonAndEpisode> seasonAndEpisodeList = convertToSeasonAndEpisodeList(seasons);
 
-        searchEpisodesByYear(seasonAndEpisodeList);
+        /*searchEpisodesByYear(seasonAndEpisodeList);
 
-        searchEpisodeByTitle(seasonAndEpisodeList);
+        searchEpisodeByTitle(seasonAndEpisodeList); */
+
+        evaluationPerSeason(seasonAndEpisodeList);
     }
 
     private String getUserInput(String message) {
@@ -147,5 +149,18 @@ public class MenuMain {
         } else {
             System.out.println("Episodio no encontrado para: " + searchByPartOfTitle);
         }
+    }
+
+    private void evaluationPerSeason(List<SeasonAndEpisode> seasonAndEpisodes) {
+        Map<Integer, Double> evaluationsSeason = seasonAndEpisodes.stream()
+                .filter(e -> e.getEvaluation() > 0.0)
+                .collect(Collectors.groupingBy(SeasonAndEpisode::getSeason,
+                        Collectors.collectingAndThen(
+                                Collectors.averagingDouble(SeasonAndEpisode::getEvaluation),
+                                average -> Math.round(average * 100.0) / 100.0)
+                        )
+                );
+
+        System.out.println("Evaluaciones: " + evaluationsSeason);
     }
 }
