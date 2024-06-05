@@ -88,7 +88,9 @@ public class MenuMain {
     }
 
     private Series fetchSeriesData() {
-        String seriesName = getUserInput("Ingresa el nombre de la serie a consultar: ");
+        System.out.println();
+        System.out.println("Ingresa el nombre de la serie a consultar: ");
+        String seriesName = scanner.nextLine();
         String resultSeriesName = encodeAndFormatSeriesName(seriesName);
 
         String url = BASE_URL + resultSeriesName + "&apikey=" + apiKey;
@@ -96,11 +98,6 @@ public class MenuMain {
         String json = apiConsumption.getData(url);
         System.out.println(json);
         return convertData.getData(json, Series.class);
-    }
-
-    private String getUserInput(String message) {
-        System.out.println(message);
-        return scanner.nextLine();
     }
 
     private String encodeAndFormatSeriesName(String seriesName) {
