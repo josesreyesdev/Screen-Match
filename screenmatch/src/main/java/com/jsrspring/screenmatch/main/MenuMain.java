@@ -32,9 +32,9 @@ public class MenuMain {
 
             var menu = """
                      Elija una de las siguientes opciones que desee realizar:
-                     1.- Buscar series
+                     1.- Buscar una Serie
                      2.- Buscar Episodios
-                     3.- Mostrar series buscadas
+                     3.- Mostrar Series buscadas
                     \s
                      0. Salir;
                     \s""";
@@ -69,6 +69,11 @@ public class MenuMain {
         } else System.out.println("Aún no haz buscado ninguna serie");
     }
 
+    private void searchWebSeries() {
+        Series series = fetchSeriesData();
+        seriesData.add(series);
+    }
+
     private void searchEpisodeBySeries() {
         Series seriesData = fetchSeriesData();
         List<Season> seasons = new ArrayList<>();
@@ -80,11 +85,6 @@ public class MenuMain {
             seasons.add(seasonData);
         }
         seasons.forEach(System.out::println);
-    }
-
-    private void searchWebSeries() {
-        Series series = fetchSeriesData();
-        seriesData.add(series);
     }
 
     private Series fetchSeriesData() {
