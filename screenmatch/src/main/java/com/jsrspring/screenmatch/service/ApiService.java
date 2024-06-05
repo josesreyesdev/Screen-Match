@@ -5,7 +5,7 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 
-public class APIConsumption {
+public class ApiService {
 
     public String getData(String url) {
         HttpClient client = HttpClient.newHttpClient();
