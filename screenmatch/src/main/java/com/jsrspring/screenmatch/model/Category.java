@@ -5,17 +5,20 @@ public enum Category {
     ROMANCE("Romance"),
     COMEDY("Comedy"),
     DRAMA("Drama"),
-    CRIME("Crime"),
-    ADVENTURE("Adventure"),
-    BIOGRAPHY("Biography"),
-    ANIMATION("Animation"),
-    SHORT("Short"),
-    FAMILY("Family");
+    CRIME("Crime");
 
-    private String categoryOmdb;
+    private final String categoryOmdb;
 
     Category(String categoryOmdb) {
         this.categoryOmdb = categoryOmdb;
     }
 
+    public static Category fromString(String text) {
+        for (Category category : Category.values()) {
+            if (category.categoryOmdb.equalsIgnoreCase(text)) {
+                return category;
+            }
+        }
+        throw new IllegalArgumentException("Ninguna categoria encontrada: " + text);
+    }
 }
