@@ -1,5 +1,8 @@
 package com.jsrspring.screenmatch.model;
 
+import com.jsrspring.screenmatch.service.ChatGPTApiService;
+import com.theokanning.openai.OpenAiHttpException;
+
 import java.util.OptionalDouble;
 
 public class SeriesDB {
@@ -18,7 +21,12 @@ public class SeriesDB {
         this.poster = series.poster();
         this.genre = Category.fromString(series.genre().split(",")[0].trim());
         this.actors = series.actors();
-        this.synopsis = series.awards();
+        try {
+            this.synopsis = ChatGPTApiService.getTranslation(series.plot());
+        } catch (OpenAiHttpException exception) {
+            exception.printStackTrace();
+            this.synopsis = series.plot();
+        }
     }
 
     public String getTitle() {
