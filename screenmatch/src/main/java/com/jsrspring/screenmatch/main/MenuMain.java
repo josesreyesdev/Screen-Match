@@ -2,6 +2,7 @@ package com.jsrspring.screenmatch.main;
 
 import com.jsrspring.screenmatch.model.Season;
 import com.jsrspring.screenmatch.model.Series;
+import com.jsrspring.screenmatch.model.SeriesDB;
 import com.jsrspring.screenmatch.service.ApiService;
 import com.jsrspring.screenmatch.service.ConvertData;
 import com.jsrspring.screenmatch.utils.config.Configuration;
@@ -9,8 +10,10 @@ import com.jsrspring.screenmatch.utils.config.Configuration;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Scanner;
+import java.util.stream.Collectors;
 
 
 public class MenuMain {
@@ -63,28 +66,9 @@ public class MenuMain {
         }
     }
 
-    private void showSearchedSeries() {
-        if (!seriesData.isEmpty()) {
-            seriesData.forEach(System.out::println);
-        } else System.out.println("Aún no haz buscado ninguna serie");
-    }
-
-    private void searchWebSeries() {
-        Series series = fetchSeriesData();
-        seriesData.add(series);
-    }
-
-    private void searchEpisodeBySeries() {
-        Series seriesData = fetchSeriesData();
-        List<Season> seasons = new ArrayList<>();
-
-        for (int i = 1; i <= seriesData.totalSeasons(); i++) {
-            String url = BASE_URL + encodeAndFormatSeriesName(seriesData.title()) + "&Season=" + i + "&apikey=" + apiKey;
-            String json = apiConsumption.getData(url);
-            Season seasonData = convertData.getData(json, Season.class);
-            seasons.add(seasonData);
-        }
-        seasons.forEach(System.out::println);
+    private String encodeAndFormatSeriesName(String seriesName) {
+        String encodedSeriesName = URLEncoder.encode(seriesName, StandardCharsets.UTF_8);
+        return encodedSeriesName.replace("+", "%20");
     }
 
     private Series fetchSeriesData() {
@@ -100,8 +84,36 @@ public class MenuMain {
         return convertData.getData(json, Series.class);
     }
 
-    private String encodeAndFormatSeriesName(String seriesName) {
-        String encodedSeriesName = URLEncoder.encode(seriesName, StandardCharsets.UTF_8);
-        return encodedSeriesName.replace("+", "%20");
+    private void searchWebSeries() {
+        Series series = fetchSeriesData();
+        seriesData.add(series);
     }
+
+    private void showSearchedSeries() {
+        List<SeriesDB> seriesDBList;
+
+        seriesDBList = seriesData.stream()
+                .map(s -> new SeriesDB(s)) //.map(s -> new SeriesDB(s))
+                .collect(Collectors.toList());
+
+        if (!seriesDBList.isEmpty()) {
+            seriesDBList.stream()
+                    .sorted(Comparator.comparing(SeriesDB::getGenre))
+                    .forEach(System.out::println);
+        } else System.out.println("Aún no haz buscado ninguna serie");
+    }
+
+    private void searchEpisodeBySeries() {
+        Series seriesData = fetchSeriesData();
+        List<Season> seasons = new ArrayList<>();
+
+        for (int i = 1; i <= seriesData.totalSeasons(); i++) {
+            String url = BASE_URL + encodeAndFormatSeriesName(seriesData.title()) + "&Season=" + i + "&apikey=" + apiKey;
+            String json = apiConsumption.getData(url);
+            Season seasonData = convertData.getData(json, Season.class);
+            seasons.add(seasonData);
+        }
+        seasons.forEach(System.out::println);
+    }
+
 }
