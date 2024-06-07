@@ -93,7 +93,7 @@ public class MenuMain {
         List<SeriesDB> seriesDBList;
 
         seriesDBList = seriesData.stream()
-                .map(s -> new SeriesDB(s)) //.map(s -> new SeriesDB(s))
+                .map(SeriesDB::new) //.map(s -> new SeriesDB(s))
                 .collect(Collectors.toList());
 
         if (!seriesDBList.isEmpty()) {
