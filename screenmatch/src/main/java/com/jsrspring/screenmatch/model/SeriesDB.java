@@ -23,9 +23,9 @@ public class SeriesDB {
         this.actors = series.actors();
         try {
             this.synopsis = ChatGPTApiService.getTranslation(series.plot());
-        } catch (OpenAiHttpException exception) {
-            exception.printStackTrace();
+        } catch (OpenAiHttpException e) {
             this.synopsis = series.plot();
+            System.out.println("Error en SeriesDB " + e.getMessage());
         }
     }
 
