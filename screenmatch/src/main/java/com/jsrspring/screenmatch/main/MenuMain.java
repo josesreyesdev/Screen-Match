@@ -33,6 +33,12 @@ public class MenuMain {
         var option = -1;
         while (option != 0) {
 
+            /*4.- Buscar Serie por Titulo
+                     5.- Top 5 mejores Series
+                     6.- Buscar Series por Categoria
+                     7.- Filtrar Series por el numero de Temporadas y su Evaluación
+                     8.- Buscar Episodios por Nombre
+                     9-. Top 5 Episodios por Serie */
             var menu = """
                      Elija una de las siguientes opciones que desee realizar:
                      1.- Buscar una Serie
@@ -49,14 +55,41 @@ public class MenuMain {
             System.out.println();
             switch (option) {
                 case 1:
+                    // Buscar cualquier serie y guardar en la BD
                     searchWebSeries();
                     break;
                 case 2:
+                    // Buscar episodio y guardar en la BD
                     searchEpisodeBySeries();
                     break;
                 case 3:
+                    // Mostrar todas las series buscadas
                     showSearchedSeries();
                     break;
+                /*case 4:
+                    // Buscar serie por title
+                    //showSeriesByTitle();
+                    break;
+                case 5:
+                    // Top 5 mejores series
+                    //showTopSeries();
+                    break;
+                case 6:
+                    // buscar series por categoria
+                    //searchSeriesByCategories();
+                    break;
+                case 7:
+                    // Filtrar series por el num de temporaas y su evaluacion
+                    //filterSeriesByNumSeasonAndEvaluation();
+                    break;
+                case 8:
+                    // search episodes by name
+                    //searchEpisodesByName();
+                    break;
+                case 9:
+                    // top 5 episodes by series
+                    //topEpisodesBySeason();
+                    break; */
                 case 0:
                     System.out.println("Cerrando Aplicación....");
                     break;
