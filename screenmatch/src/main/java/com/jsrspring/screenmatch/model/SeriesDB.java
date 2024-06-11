@@ -22,6 +22,8 @@ public class SeriesDB {
     private String actors;
     private String synopsis;
 
+    public SeriesDB() {}
+
     public SeriesDB(Series series) {
         this.title = series.title();
         this.totalSeasons = series.totalSeasons();
