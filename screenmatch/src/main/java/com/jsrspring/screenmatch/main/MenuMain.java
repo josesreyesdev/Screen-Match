@@ -14,7 +14,6 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Scanner;
-import java.util.stream.Collectors;
 
 
 public class MenuMain {
@@ -26,9 +25,9 @@ public class MenuMain {
     private static final String BASE_URL = "https://www.omdbapi.com/?t=";
     private static final String apiKey = Configuration.API_KEY;
 
-    private final List<Series> seriesData = new ArrayList<>();
+    //private final List<Series> seriesData = new ArrayList<>();
 
-    private SeriesRepository repository;
+    private final SeriesRepository repository;
 
     public MenuMain(SeriesRepository repository) {
         this.repository = repository;
@@ -134,11 +133,7 @@ public class MenuMain {
     }
 
     private void showSearchedSeries() {
-        List<SeriesDB> seriesDBList;
-
-        seriesDBList = seriesData.stream()
-                .map(SeriesDB::new) //.map(s -> new SeriesDB(s))
-                .collect(Collectors.toList());
+        List<SeriesDB> seriesDBList = repository.findAll();
 
         if (!seriesDBList.isEmpty()) {
             seriesDBList.stream()
