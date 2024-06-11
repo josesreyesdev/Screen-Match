@@ -3,6 +3,7 @@ package com.jsrspring.screenmatch.main;
 import com.jsrspring.screenmatch.model.Season;
 import com.jsrspring.screenmatch.model.Series;
 import com.jsrspring.screenmatch.model.SeriesDB;
+import com.jsrspring.screenmatch.repository.SeriesRepository;
 import com.jsrspring.screenmatch.service.ApiService;
 import com.jsrspring.screenmatch.service.ConvertData;
 import com.jsrspring.screenmatch.utils.config.Configuration;
@@ -26,6 +27,12 @@ public class MenuMain {
     private static final String apiKey = Configuration.API_KEY;
 
     private final List<Series> seriesData = new ArrayList<>();
+
+    private SeriesRepository repository;
+
+    public MenuMain(SeriesRepository repository) {
+        this.repository = repository;
+    }
 
     public void showMenu() {
         //24, Game of Thrones, Vikings, Spartacus
@@ -118,8 +125,12 @@ public class MenuMain {
     }
 
     private void searchWebSeries() {
-        Series series = fetchSeriesData();
-        seriesData.add(series);
+        Series data = fetchSeriesData();
+        //seriesData.add(series);
+
+        //Save series
+        SeriesDB seriesDB = new SeriesDB(data);
+        repository.save(seriesDB);
     }
 
     private void showSearchedSeries() {

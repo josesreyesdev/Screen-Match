@@ -4,6 +4,7 @@ import com.jsrspring.screenmatch.service.ChatGPTApiService;
 import com.theokanning.openai.OpenAiHttpException;
 import jakarta.persistence.*;
 
+import java.util.List;
 import java.util.OptionalDouble;
 
 @Entity
@@ -21,6 +22,8 @@ public class SeriesDB {
     private Category genre;
     private String actors;
     private String synopsis;
+    @Transient
+    private List<SeasonAndEpisode> episodes;
 
     public SeriesDB() {}
 
