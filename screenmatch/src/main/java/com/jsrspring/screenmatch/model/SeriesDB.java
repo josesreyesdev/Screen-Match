@@ -2,14 +2,22 @@ package com.jsrspring.screenmatch.model;
 
 import com.jsrspring.screenmatch.service.ChatGPTApiService;
 import com.theokanning.openai.OpenAiHttpException;
+import jakarta.persistence.*;
 
 import java.util.OptionalDouble;
 
+@Entity
+@Table(name = "series")
 public class SeriesDB {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    @Column(unique = true)
     private String title;
     private Integer totalSeasons;
     private Double evaluation;
     private String poster;
+    @Enumerated(EnumType.STRING)
     private Category genre;
     private String actors;
     private String synopsis;
@@ -27,6 +35,14 @@ public class SeriesDB {
             this.synopsis = series.plot();
             System.out.println("Error en SeriesDB " + e.getMessage());
         }
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public String getTitle() {
