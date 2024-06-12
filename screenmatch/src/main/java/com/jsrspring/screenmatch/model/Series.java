@@ -22,6 +22,7 @@ public class Series {
     private Category genre;
     private String actors;
     private String synopsis;
+
     //@Transient // ignora estos datos en la bd
     @OneToMany(mappedBy = "series")
     private List<Episode> episodes;
@@ -105,6 +106,14 @@ public class Series {
 
     public void setSynopsis(String synopsis) {
         this.synopsis = synopsis;
+    }
+
+    public List<Episode> getEpisodes() {
+        return episodes;
+    }
+
+    public void setEpisodes(List<Episode> episodes) {
+        this.episodes = episodes;
     }
 
     @Override

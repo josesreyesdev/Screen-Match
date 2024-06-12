@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
+import java.util.Optional;
 
 @Entity
 @Table(name = "episodes")
@@ -22,7 +23,9 @@ public class Episode {
     public Episode() {}
 
     public Episode(String season, EpisodeData e) {
-        this.season = Integer.valueOf(season);
+        this.season = Optional.ofNullable(season)
+                .map(Integer::valueOf)
+                .orElse(-1);//Integer.valueOf(season);
         this.title = e.title();
         this.episodeNumber = e.episode();
 
