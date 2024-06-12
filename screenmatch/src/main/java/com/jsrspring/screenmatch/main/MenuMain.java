@@ -1,8 +1,8 @@
 package com.jsrspring.screenmatch.main;
 
-import com.jsrspring.screenmatch.model.Season;
+import com.jsrspring.screenmatch.model.SeasonData;
 import com.jsrspring.screenmatch.model.Series;
-import com.jsrspring.screenmatch.model.SeriesDB;
+import com.jsrspring.screenmatch.model.SeriesData;
 import com.jsrspring.screenmatch.repository.SeriesRepository;
 import com.jsrspring.screenmatch.service.ApiService;
 import com.jsrspring.screenmatch.service.ConvertData;
@@ -25,7 +25,7 @@ public class MenuMain {
     private static final String BASE_URL = "https://www.omdbapi.com/?t=";
     private static final String apiKey = Configuration.API_KEY;
 
-    //private final List<Series> seriesData = new ArrayList<>();
+    //private final List<SeriesData> seriesData = new ArrayList<>();
 
     private final SeriesRepository repository;
 
@@ -40,9 +40,9 @@ public class MenuMain {
         while (option != 0) {
 
             /*4.- Buscar Serie por Titulo
-                     5.- Top 5 mejores Series
-                     6.- Buscar Series por Categoria
-                     7.- Filtrar Series por el numero de Temporadas y su Evaluación
+                     5.- Top 5 mejores SeriesData
+                     6.- Buscar SeriesData por Categoria
+                     7.- Filtrar SeriesData por el numero de Temporadas y su Evaluación
                      8.- Buscar Episodios por Nombre
                      9-. Top 5 Episodios por Serie */
             var menu = """
@@ -69,7 +69,7 @@ public class MenuMain {
                     searchEpisodeBySeries();
                     break;
                 case 3:
-                    // Mostrar todas las series buscadas
+                    // Mostrar todas las seriesData buscadas
                     showSearchedSeries();
                     break;
                 /*case 4:
@@ -77,23 +77,23 @@ public class MenuMain {
                     //showSeriesByTitle();
                     break;
                 case 5:
-                    // Top 5 mejores series
+                    // Top 5 mejores seriesData
                     //showTopSeries();
                     break;
                 case 6:
-                    // buscar series por categoria
+                    // buscar seriesData por categoria
                     //searchSeriesByCategories();
                     break;
                 case 7:
-                    // Filtrar series por el num de temporaas y su evaluacion
+                    // Filtrar seriesData por el num de temporaas y su evaluacion
                     //filterSeriesByNumSeasonAndEvaluation();
                     break;
                 case 8:
-                    // search episodes by name
+                    // search episodeData by name
                     //searchEpisodesByName();
                     break;
                 case 9:
-                    // top 5 episodes by series
+                    // top 5 episodeData by seriesData
                     //topEpisodesBySeason();
                     break; */
                 case 0:
@@ -110,7 +110,7 @@ public class MenuMain {
         return encodedSeriesName.replace("+", "%20");
     }
 
-    private Series fetchSeriesData() {
+    private SeriesData fetchSeriesData() {
         System.out.println();
         System.out.println("Ingresa el nombre de la serie a consultar: ");
         String seriesName = scanner.nextLine();
@@ -120,36 +120,36 @@ public class MenuMain {
 
         String json = apiConsumption.getData(url);
         System.out.println(json);
-        return convertData.getData(json, Series.class);
+        return convertData.getData(json, SeriesData.class);
     }
 
     private void searchWebSeries() {
-        Series data = fetchSeriesData();
-        //seriesData.add(series);
+        SeriesData data = fetchSeriesData();
+        //seriesData.add(seriesData);
 
-        //Save series
-        SeriesDB seriesDB = new SeriesDB(data);
-        repository.save(seriesDB);
+        //Save seriesData
+        Series series = new Series(data);
+        repository.save(series);
     }
 
     private void showSearchedSeries() {
-        List<SeriesDB> seriesDBList = repository.findAll();
+        List<Series> seriesList = repository.findAll();
 
-        if (!seriesDBList.isEmpty()) {
-            seriesDBList.stream()
-                    .sorted(Comparator.comparing(SeriesDB::getGenre))
+        if (!seriesList.isEmpty()) {
+            seriesList.stream()
+                    .sorted(Comparator.comparing(Series::getGenre))
                     .forEach(System.out::println);
         } else System.out.println("Aún no haz buscado ninguna serie");
     }
 
     private void searchEpisodeBySeries() {
-        Series seriesData = fetchSeriesData();
-        List<Season> seasons = new ArrayList<>();
+        SeriesData seriesData = fetchSeriesData();
+        List<SeasonData> seasons = new ArrayList<>();
 
         for (int i = 1; i <= seriesData.totalSeasons(); i++) {
-            String url = BASE_URL + encodeAndFormatSeriesName(seriesData.title()) + "&Season=" + i + "&apikey=" + apiKey;
+            String url = BASE_URL + encodeAndFormatSeriesName(seriesData.title()) + "&SeasonData=" + i + "&apikey=" + apiKey;
             String json = apiConsumption.getData(url);
-            Season seasonData = convertData.getData(json, Season.class);
+            SeasonData seasonData = convertData.getData(json, SeasonData.class);
             seasons.add(seasonData);
         }
         seasons.forEach(System.out::println);
