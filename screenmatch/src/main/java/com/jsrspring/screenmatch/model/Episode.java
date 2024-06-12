@@ -1,14 +1,25 @@
 package com.jsrspring.screenmatch.model;
 
+import jakarta.persistence.*;
+
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 
+@Entity
+@Table(name = "episodes")
 public class Episode {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
     private Integer season;
     private String title;
     private Integer episodeNumber;
     private Double evaluation;
     private LocalDate releaseDate;
+    @ManyToOne
+    private Series series;
+
+    public Episode() {}
 
     public Episode(String season, EpisodeData e) {
         this.season = Integer.valueOf(season);
@@ -26,6 +37,10 @@ public class Episode {
         } catch (DateTimeParseException exception) {
             this.releaseDate = null;
         }
+    }
+
+    public Series getSeries() {
+        return series;
     }
 
     public Integer getSeason() {

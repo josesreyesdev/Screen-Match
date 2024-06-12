@@ -22,7 +22,8 @@ public class Series {
     private Category genre;
     private String actors;
     private String synopsis;
-    @Transient
+    //@Transient // ignora estos datos en la bd
+    @OneToMany(mappedBy = "series")
     private List<Episode> episodes;
 
     public Series() {}
