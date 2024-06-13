@@ -24,7 +24,7 @@ public class Series {
     private String synopsis;
 
     //@Transient // ignora estos datos en la bd
-    @OneToMany(mappedBy = "series")
+    @OneToMany(mappedBy = "series", cascade = CascadeType.ALL)  // guardar una serie si hubo algun cambio en episodios
     private List<Episode> episodes;
 
     public Series() {}
