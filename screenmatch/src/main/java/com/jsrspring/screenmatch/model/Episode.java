@@ -46,6 +46,10 @@ public class Episode {
         return series;
     }
 
+    public void setSeries(Series series) {
+        this.series = series;
+    }
+
     public Integer getSeason() {
         return season;
     }

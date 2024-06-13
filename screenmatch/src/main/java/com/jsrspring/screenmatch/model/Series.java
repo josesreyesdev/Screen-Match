@@ -24,7 +24,8 @@ public class Series {
     private String synopsis;
 
     //@Transient // ignora estos datos en la bd
-    @OneToMany(mappedBy = "series", cascade = CascadeType.ALL)  // guardar una serie si hubo algun cambio en episodios
+    // guardar una serie si hubo algun cambio en episodios con cascade, fetch= cargaAnciosa o precargada
+    @OneToMany(mappedBy = "series", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<Episode> episodes;
 
     public Series() {}
@@ -113,6 +114,7 @@ public class Series {
     }
 
     public void setEpisodes(List<Episode> episodes) {
+        episodes.forEach(e -> e.setSeries(this));
         this.episodes = episodes;
     }
 
@@ -124,6 +126,7 @@ public class Series {
                 ", poster='" + poster + '\'' +
                 ", genre=" + genre +
                 ", actors='" + actors + '\'' +
-                ", synopsis='" + synopsis;
+                ", synopsis='" + synopsis + '\'' +
+                ", Episodes=" + episodes + '\'' ;
     }
 }
