@@ -38,12 +38,6 @@ public class MenuMain {
         var option = -1;
         while (option != 0) {
 
-            /*4.- Buscar Serie por Titulo
-                     5.- Top 5 mejores SeriesData
-                     6.- Buscar SeriesData por Categoria
-                     7.- Filtrar SeriesData por el numero de Temporadas y su Evaluación
-                     8.- Buscar Episodios por Nombre
-                     9-. Top 5 Episodios por Serie */
             var menu = """
                      Elija una de las siguientes opciones que desee realizar:
                      1.- Buscar una Serie
@@ -71,30 +65,6 @@ public class MenuMain {
                     // Mostrar todas las seriesData buscadas
                     showSearchedSeries();
                     break;
-                /*case 4:
-                    // Buscar serie por title
-                    //showSeriesByTitle();
-                    break;
-                case 5:
-                    // Top 5 mejores seriesData
-                    //showTopSeries();
-                    break;
-                case 6:
-                    // buscar seriesData por categoria
-                    //searchSeriesByCategories();
-                    break;
-                case 7:
-                    // Filtrar seriesData por el num de temporaas y su evaluacion
-                    //filterSeriesByNumSeasonAndEvaluation();
-                    break;
-                case 8:
-                    // search episodeData by name
-                    //searchEpisodesByName();
-                    break;
-                case 9:
-                    // top 5 episodeData by seriesData
-                    //topEpisodesBySeason();
-                    break; */
                 case 0:
                     System.out.println("Cerrando Aplicación....");
                     break;
