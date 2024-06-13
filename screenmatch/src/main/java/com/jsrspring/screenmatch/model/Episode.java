@@ -1,35 +1,81 @@
 package com.jsrspring.screenmatch.model;
 
-import com.fasterxml.jackson.annotation.JsonAlias;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import jakarta.persistence.*;
 
-import java.util.List;
+import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
+import java.util.Optional;
 
-@JsonIgnoreProperties(ignoreUnknown = true)
-public record Episode(
-        @JsonAlias("Title") String title,
-        @JsonAlias("Year") String year,
-        @JsonAlias("Rated") String rated,
-        @JsonAlias("Released") String released, // fecha de lanzamiento
-        @JsonAlias("Season") String season,
-        @JsonAlias("Episode") Integer episode, // num Episode
-        @JsonAlias("Runtime") String runtime,
-        @JsonAlias("Genre") String genre,
-        @JsonAlias("Director") String director,
-        @JsonAlias("Writer") String writer,
-        @JsonAlias("Actors") String actors,
-        @JsonAlias("Plot") String plot,
-        @JsonAlias("Language") String language,
-        @JsonAlias("Country") String country,
-        @JsonAlias("Awards") String awards,
-        @JsonAlias("Poster") String poster,
-        @JsonAlias("Ratings") List<Rating> ratings,
-        @JsonAlias("Metascore") String metascore,
-        @JsonAlias("imdbRating") String evaluation, // evaluacion
-        @JsonAlias("imdbVotes") String imdbVotes,
-        @JsonAlias("imdbID") String imdbID,
-        @JsonAlias("seriesID") String seriesID,
-        @JsonAlias("Type") String type,
-        @JsonAlias("Response") String response
-) {
+@Entity
+@Table(name = "episodes")
+public class Episode {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    private Integer season;
+    private String title;
+    private Integer episodeNumber;
+    private Double evaluation;
+    private LocalDate releaseDate;
+    @ManyToOne
+    private Series series;
+
+    public Episode() {}
+
+    public Episode(String season, EpisodeData e) {
+        this.season = Optional.ofNullable(season)
+                .map(Integer::valueOf)
+                .orElse(-1);//Integer.valueOf(season);
+        this.title = e.title();
+        this.episodeNumber = e.episode();
+
+        try {
+            this.evaluation = Double.valueOf(e.evaluation());
+        } catch (NumberFormatException exception) {
+            this.evaluation = 0.0;
+        }
+
+        try {
+            this.releaseDate = LocalDate.parse(e.released());
+        } catch (DateTimeParseException exception) {
+            this.releaseDate = null;
+        }
+    }
+
+    public Series getSeries() {
+        return series;
+    }
+
+    public void setSeries(Series series) {
+        this.series = series;
+    }
+
+    public Integer getSeason() {
+        return season;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public Integer getEpisodeNumber() {
+        return episodeNumber;
+    }
+
+    public Double getEvaluation() {
+        return evaluation;
+    }
+
+    public LocalDate getReleaseDate() {
+        return releaseDate;
+    }
+
+    @Override
+    public String toString() {
+        return "season=" + season +
+                ", title=" + title +
+                ", episodeNumber=" + episodeNumber +
+                ", evaluation=" + evaluation +
+                ", releaseDate=" + releaseDate;
+    }
 }

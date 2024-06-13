@@ -1,8 +1,8 @@
 package com.jsrspring.screenmatch.main;
 
-import com.jsrspring.screenmatch.model.Episode;
-import com.jsrspring.screenmatch.model.Season;
-import com.jsrspring.screenmatch.model.Series;
+import com.jsrspring.screenmatch.model.EpisodeData;
+import com.jsrspring.screenmatch.model.SeasonData;
+import com.jsrspring.screenmatch.model.SeriesData;
 import com.jsrspring.screenmatch.service.ApiService;
 import com.jsrspring.screenmatch.service.ConvertData;
 import com.jsrspring.screenmatch.utils.config.Configuration;
@@ -29,16 +29,16 @@ public class FirstMenu {
             String encodeResultName = encodeAndFormatSeriesName(seriesName);
 
             // Consumo de una Serie
-            Series seriesData = getSeriesData(encodeResultName);
-            System.out.println("Series => " + seriesData);
+            SeriesData seriesData = getSeriesData(encodeResultName);
+            System.out.println("SeriesData => " + seriesData);
 
             // Consumo de un Episodio
-            Episode episodeData = getEpisodeData(encodeResultName, "1", "1");
-            System.out.println("Episode of " + seriesName + " => " + episodeData);
+            EpisodeData episodeData = getEpisodeData(encodeResultName, "1", "1");
+            System.out.println("EpisodeData of " + seriesName + " => " + episodeData);
 
             // Consumo de Temporadas
-            List<Season> seasons = getSeasonsData(encodeResultName, seriesData.totalSeasons());
-            seasons.forEach(System.out::println);
+            List<SeasonData> seasonData = getSeasonsData(encodeResultName, seriesData.totalSeasons());
+            seasonData.forEach(System.out::println);
         } catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -50,24 +50,24 @@ public class FirstMenu {
         return encodedSeriesName.replace("+", "%20");
     }
 
-    private Series getSeriesData(String seriesName) {
+    private SeriesData getSeriesData(String seriesName) {
         String url = buildURL(seriesName, null, null);
         String json = apiConsumption.getData(url);
-        return convertData.getData(json, Series.class);
+        return convertData.getData(json, SeriesData.class);
     }
 
-    private Episode getEpisodeData(String seriesName, String seasonNumber, String episodeNumber) {
+    private EpisodeData getEpisodeData(String seriesName, String seasonNumber, String episodeNumber) {
         String url = buildURL(seriesName, seasonNumber, episodeNumber);
         String json = apiConsumption.getData(url);
-        return convertData.getData(json, Episode.class);
+        return convertData.getData(json, EpisodeData.class);
     }
 
-    private List<Season> getSeasonsData(String seriesName, int totalSeasons) {
-        List<Season> seasons = new ArrayList<>();
+    private List<SeasonData> getSeasonsData(String seriesName, int totalSeasons) {
+        List<SeasonData> seasons = new ArrayList<>();
         for (int i = 1; i <= totalSeasons; i++) {
             String url = buildURL(seriesName, String.valueOf(i), null);
             String json = apiConsumption.getData(url);
-            Season seasonData = convertData.getData(json, Season.class);
+            SeasonData seasonData = convertData.getData(json, SeasonData.class);
             seasons.add(seasonData);
         }
         return seasons;

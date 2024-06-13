@@ -1,8 +1,9 @@
 package com.jsrspring.screenmatch.main;
 
-import com.jsrspring.screenmatch.model.Season;
+import com.jsrspring.screenmatch.model.Episode;
+import com.jsrspring.screenmatch.model.SeasonData;
 import com.jsrspring.screenmatch.model.Series;
-import com.jsrspring.screenmatch.model.SeriesDB;
+import com.jsrspring.screenmatch.model.SeriesData;
 import com.jsrspring.screenmatch.repository.SeriesRepository;
 import com.jsrspring.screenmatch.service.ApiService;
 import com.jsrspring.screenmatch.service.ConvertData;
@@ -10,10 +11,8 @@ import com.jsrspring.screenmatch.utils.config.Configuration;
 
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
+import java.util.stream.Collectors;
 
 
 public class MenuMain {
@@ -25,7 +24,7 @@ public class MenuMain {
     private static final String BASE_URL = "https://www.omdbapi.com/?t=";
     private static final String apiKey = Configuration.API_KEY;
 
-    //private final List<Series> seriesData = new ArrayList<>();
+    private List<Series> series;
 
     private final SeriesRepository repository;
 
@@ -39,12 +38,6 @@ public class MenuMain {
         var option = -1;
         while (option != 0) {
 
-            /*4.- Buscar Serie por Titulo
-                     5.- Top 5 mejores Series
-                     6.- Buscar Series por Categoria
-                     7.- Filtrar Series por el numero de Temporadas y su Evaluación
-                     8.- Buscar Episodios por Nombre
-                     9-. Top 5 Episodios por Serie */
             var menu = """
                      Elija una de las siguientes opciones que desee realizar:
                      1.- Buscar una Serie
@@ -69,33 +62,9 @@ public class MenuMain {
                     searchEpisodeBySeries();
                     break;
                 case 3:
-                    // Mostrar todas las series buscadas
+                    // Mostrar todas las seriesData buscadas
                     showSearchedSeries();
                     break;
-                /*case 4:
-                    // Buscar serie por title
-                    //showSeriesByTitle();
-                    break;
-                case 5:
-                    // Top 5 mejores series
-                    //showTopSeries();
-                    break;
-                case 6:
-                    // buscar series por categoria
-                    //searchSeriesByCategories();
-                    break;
-                case 7:
-                    // Filtrar series por el num de temporaas y su evaluacion
-                    //filterSeriesByNumSeasonAndEvaluation();
-                    break;
-                case 8:
-                    // search episodes by name
-                    //searchEpisodesByName();
-                    break;
-                case 9:
-                    // top 5 episodes by series
-                    //topEpisodesBySeason();
-                    break; */
                 case 0:
                     System.out.println("Cerrando Aplicación....");
                     break;
@@ -110,7 +79,7 @@ public class MenuMain {
         return encodedSeriesName.replace("+", "%20");
     }
 
-    private Series fetchSeriesData() {
+    private SeriesData fetchSeriesData() {
         System.out.println();
         System.out.println("Ingresa el nombre de la serie a consultar: ");
         String seriesName = scanner.nextLine();
@@ -120,39 +89,65 @@ public class MenuMain {
 
         String json = apiConsumption.getData(url);
         System.out.println(json);
-        return convertData.getData(json, Series.class);
+        return convertData.getData(json, SeriesData.class);
     }
 
     private void searchWebSeries() {
-        Series data = fetchSeriesData();
-        //seriesData.add(series);
+        SeriesData data = fetchSeriesData();
+        //seriesData.add(seriesData);
 
-        //Save series
-        SeriesDB seriesDB = new SeriesDB(data);
-        repository.save(seriesDB);
+        //Save seriesData
+        Series series = new Series(data);
+        repository.save(series);
     }
 
     private void showSearchedSeries() {
-        List<SeriesDB> seriesDBList = repository.findAll();
+        series = repository.findAll();
 
-        if (!seriesDBList.isEmpty()) {
-            seriesDBList.stream()
-                    .sorted(Comparator.comparing(SeriesDB::getGenre))
+        if (!series.isEmpty()) {
+            series.stream()
+                    .sorted(Comparator.comparing(Series::getGenre))
                     .forEach(System.out::println);
         } else System.out.println("Aún no haz buscado ninguna serie");
     }
 
     private void searchEpisodeBySeries() {
-        Series seriesData = fetchSeriesData();
-        List<Season> seasons = new ArrayList<>();
+        System.out.println();
+        showSearchedSeries();
 
-        for (int i = 1; i <= seriesData.totalSeasons(); i++) {
-            String url = BASE_URL + encodeAndFormatSeriesName(seriesData.title()) + "&Season=" + i + "&apikey=" + apiKey;
-            String json = apiConsumption.getData(url);
-            Season seasonData = convertData.getData(json, Season.class);
-            seasons.add(seasonData);
-        }
-        seasons.forEach(System.out::println);
+        System.out.println();
+        System.out.println("Escribe el nombre de la serie para ver sus episodios");
+        var seriesName = scanner.nextLine();
+
+        Optional<Series> filteredSeries = series.stream()
+                .filter(s -> s.getTitle().toUpperCase().contains(seriesName.toUpperCase()))
+                .findFirst();
+
+        if (filteredSeries.isPresent()) {
+            var foundSeries = filteredSeries.get();
+
+            List<SeasonData> seasons = new ArrayList<>();
+
+            for (int i = 1; i <= foundSeries.getTotalSeasons(); i++) {
+                String url = BASE_URL + encodeAndFormatSeriesName(foundSeries.getTitle()) + "&season=" + i + "&apikey=" + apiKey;
+                String json = apiConsumption.getData(url);
+                SeasonData seasonData = convertData.getData(json, SeasonData.class);
+                seasons.add(seasonData);
+            }
+            System.out.println();
+            seasons.forEach(System.out::println);
+
+            List<Episode> episodes = seasons.stream()
+                    .flatMap(s -> s.episodeData().stream()
+                            .map(e -> new Episode(s.season(), e))
+                    ).collect(Collectors.toList());
+
+            foundSeries.setEpisodes(episodes);
+
+            //Save series episodes in db
+            repository.save(foundSeries);
+
+        } else System.out.println("Serie no encontrada");
     }
 
 }

@@ -1,9 +1,9 @@
 package com.jsrspring.screenmatch.utils.rules;
 
 import com.jsrspring.screenmatch.model.Episode;
-import com.jsrspring.screenmatch.model.Season;
-import com.jsrspring.screenmatch.model.SeasonAndEpisode;
-import com.jsrspring.screenmatch.model.Series;
+import com.jsrspring.screenmatch.model.EpisodeData;
+import com.jsrspring.screenmatch.model.SeasonData;
+import com.jsrspring.screenmatch.model.SeriesData;
 import com.jsrspring.screenmatch.service.ApiService;
 import com.jsrspring.screenmatch.service.ConvertData;
 import com.jsrspring.screenmatch.utils.config.Configuration;
@@ -34,7 +34,7 @@ public class BusinessRules {
         return encodedSeriesName.replace("+", "%20");
     }
 
-    private Series fetchSeriesData() {
+    private SeriesData fetchSeriesData() {
         String seriesName = getUserInput("Ingresa el nombre de la serie a consultar: ");
         String resultSeriesName = encodeAndFormatSeriesName(seriesName);
 
@@ -42,40 +42,40 @@ public class BusinessRules {
 
         String json = apiConsumption.getData(url);
         System.out.println(json);
-        return convertData.getData(json, Series.class);
+        return convertData.getData(json, SeriesData.class);
     }
 
-    private List<Season> fetchSeasonsData(String seriesName, int totalSeasons) {
-        List<Season> seasons = new ArrayList<>();
+    private List<SeasonData> fetchSeasonsData(String seriesName, int totalSeasons) {
+        List<SeasonData> seasons = new ArrayList<>();
         for (int i = 1; i <= totalSeasons; i++) {
-            String url = BASE_URL + seriesName + "&Season=" + i + "&apikey=" + apiKey;
+            String url = BASE_URL + seriesName + "&SeasonData=" + i + "&apikey=" + apiKey;
             String json = apiConsumption.getData(url);
-            Season seasonData = convertData.getData(json, Season.class);
+            SeasonData seasonData = convertData.getData(json, SeasonData.class);
             seasons.add(seasonData);
         }
         return seasons;
     }
 
-    private void displayEpisodeTitles(List<Season> seasons) {
+    private void displayEpisodeTitles(List<SeasonData> seasonData) {
         System.out.println();
-        seasons.forEach(s -> s.episodes().forEach(e ->
+        seasonData.forEach(s -> s.episodeData().forEach(e ->
                 System.out.println("Title: " + e.title() + " => Temporada: " + s.season())
         ));
     }
 
-    private List<Episode> convertToEpisodeList(List<Season> seasons) {
-        return seasons.stream()
-                .flatMap(season -> season.episodes().stream())
+    private List<EpisodeData> convertToEpisodeList(List<SeasonData> seasonData) {
+        return seasonData.stream()
+                .flatMap(season -> season.episodeData().stream())
                 .collect(Collectors.toList());
     }
 
-    private void displayTop5Episodes(List<Episode> episodes, String seriesName) {
+    private void displayTop5Episodes(List<EpisodeData> episodeData, String seriesName) {
         System.out.println();
-        System.out.println("Top 5 episodes of: " + seriesName);
-        episodes.stream()
+        System.out.println("Top 5 episodeData of: " + seriesName);
+        episodeData.stream()
                 .filter(e -> !e.evaluation().equalsIgnoreCase("N/A"))
                 .peek(e -> System.out.println("Primero: filtro (N/A) " + e))
-                .sorted(Comparator.comparing(Episode::evaluation).reversed())
+                .sorted(Comparator.comparing(EpisodeData::evaluation).reversed())
                 .peek(e -> System.out.println("Segundo: ordenando de mayor a menor " + e))
                 .map(e -> e.title().toUpperCase())
                 .peek(e -> System.out.println("Tercero: filtro del titulo a mayusculas " + e))
@@ -83,15 +83,15 @@ public class BusinessRules {
                 .forEach(System.out::println);
     }
 
-    private List<SeasonAndEpisode> convertToSeasonAndEpisodeList(List<Season> seasons) {
-        return seasons.stream()
-                .flatMap(s -> s.episodes().stream()
-                        .map(e -> new SeasonAndEpisode(s.season(), e))
+    private List<Episode> convertToSeasonAndEpisodeList(List<SeasonData> seasonData) {
+        return seasonData.stream()
+                .flatMap(s -> s.episodeData().stream()
+                        .map(e -> new Episode(s.season(), e))
                 )
                 .collect(Collectors.toList());
     }
 
-    private void searchEpisodesByYear(List<SeasonAndEpisode> seasonAndEpisodeList) {
+    private void searchEpisodesByYear(List<Episode> episodeList) {
         System.out.println();
         System.out.println("Ingresa el año del cual deseas ver el episodio");
         int year = scanner.nextInt();
@@ -100,7 +100,7 @@ public class BusinessRules {
         LocalDate searchDate = LocalDate.of(year, 1, 1);
 
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-        seasonAndEpisodeList.stream()
+        episodeList.stream()
                 .filter(e -> e.getReleaseDate() != null && e.getReleaseDate().isAfter(searchDate))
                 .forEach(e -> System.out.println(
                         "Temporada=" + e.getSeason() +
@@ -111,12 +111,12 @@ public class BusinessRules {
                 ));
     }
 
-    private void searchEpisodeByTitle(List<SeasonAndEpisode> seasonAndEpisodeList) {
+    private void searchEpisodeByTitle(List<Episode> episodeList) {
         System.out.println();
         System.out.println("Ingresa el titulo del episodio que deseas ver:");
         String searchByPartOfTitle = scanner.nextLine();
 
-        Optional<SeasonAndEpisode> searchByTitle = seasonAndEpisodeList.stream()
+        Optional<Episode> searchByTitle = episodeList.stream()
                 .filter(e -> e.getTitle().toUpperCase().contains(searchByPartOfTitle.toUpperCase()))
                 .findFirst();
 
@@ -130,12 +130,12 @@ public class BusinessRules {
         }
     }
 
-    private void evaluationPerSeason(List<SeasonAndEpisode> seasonAndEpisodes) {
-        Map<Integer, Double> evaluationsSeason = seasonAndEpisodes.stream()
+    private void evaluationPerSeason(List<Episode> episodes) {
+        Map<Integer, Double> evaluationsSeason = episodes.stream()
                 .filter(e -> e.getEvaluation() > 0.0)
-                .collect(Collectors.groupingBy(SeasonAndEpisode::getSeason,
+                .collect(Collectors.groupingBy(Episode::getSeason,
                                 Collectors.collectingAndThen(
-                                        Collectors.averagingDouble(SeasonAndEpisode::getEvaluation),
+                                        Collectors.averagingDouble(Episode::getEvaluation),
                                         average -> Math.round(average * 100.0) / 100.0)
                         )
                 );
@@ -144,10 +144,10 @@ public class BusinessRules {
         System.out.println("Evaluaciones: " + evaluationsSeason);
     }
 
-    private void statistics(List<SeasonAndEpisode> seasonAndEpisodes) {
-        DoubleSummaryStatistics est = seasonAndEpisodes.stream()
+    private void statistics(List<Episode> episodes) {
+        DoubleSummaryStatistics est = episodes.stream()
                 .filter(e -> e.getEvaluation() > 0.0)
-                .collect(Collectors.summarizingDouble(SeasonAndEpisode::getEvaluation));
+                .collect(Collectors.summarizingDouble(Episode::getEvaluation));
 
         System.out.println();
         System.out.println("Estadisticas => " + est);
