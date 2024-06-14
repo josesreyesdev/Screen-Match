@@ -1,9 +1,6 @@
 package com.jsrspring.screenmatch.main;
 
-import com.jsrspring.screenmatch.model.Episode;
-import com.jsrspring.screenmatch.model.SeasonData;
-import com.jsrspring.screenmatch.model.Series;
-import com.jsrspring.screenmatch.model.SeriesData;
+import com.jsrspring.screenmatch.model.*;
 import com.jsrspring.screenmatch.repository.SeriesRepository;
 import com.jsrspring.screenmatch.service.ApiService;
 import com.jsrspring.screenmatch.service.ConvertData;
@@ -43,6 +40,10 @@ public class MenuMain {
                      1.- Buscar una Serie
                      2.- Buscar Episodios
                      3.- Mostrar Series buscadas
+                     4.- Buscar Series por Titulo
+                     5.- Top 5 mejores Series en la BD
+                     6.- Buscar Serie por Categoria
+                     7.- Buscar Serie por cierto Numero de Temporadas y Evaluación especifica
                     \s
                      0. Salir;
                     \s""";
@@ -64,6 +65,22 @@ public class MenuMain {
                 case 3:
                     // Mostrar todas las seriesData buscadas
                     showSearchedSeries();
+                    break;
+                case 4:
+                    //Buscar series por titulo
+                    searchSeriesByTitle();
+                    break;
+                case 5:
+                    //Buscar Top 5 de las mejores series en la BD
+                    top5BestSeries();
+                    break;
+                case 6:
+                    //Buscar Serie por categoria
+                    searchSeriesByCategory();
+                    break;
+                case 7:
+                    //Buscar serie por num de temporadas y evaluacion minima
+                    searchSeriesBySeasonAndEvaluation();
                     break;
                 case 0:
                     System.out.println("Cerrando Aplicación....");
@@ -150,4 +167,63 @@ public class MenuMain {
         } else System.out.println("Serie no encontrada");
     }
 
+    private void searchSeriesByTitle() {
+        System.out.println();
+        System.out.println("Escribe el nombre de la serie a buscar");
+        var seriesName = scanner.nextLine();
+
+        Optional<Series> searchedSeries = repository.findByTitleContainsIgnoreCase(seriesName);
+
+        if (searchedSeries.isPresent()) {
+            System.out.println();
+            System.out.println("Serie encontrada => " + searchedSeries.get());
+        } else System.out.println("No encontre la serie en la BD");
+    }
+
+    private void top5BestSeries() {
+        List<Series> topSeries = repository.findTop5ByOrderByEvaluationDesc();
+        if (!topSeries.isEmpty()) {
+            System.out.println();
+            System.out.println("Top 5 series de la BD");
+            topSeries.forEach(s ->
+                    System.out.println("Serie: " + s.getTitle() + ", Evaluación: " + s.getEvaluation())
+            );
+        } else System.out.println("No encontre series en la BD");
+    }
+
+    private void searchSeriesByCategory() {
+        System.out.println();
+        System.out.println("Escribe la Genero/Categoria de la serie a buscar");
+        var genre = scanner.nextLine();
+
+        var category = Category.fromEsp(genre);
+
+        List<Series> seriesByCategory = repository.findByGenre(category);
+
+        seriesByCategory.forEach(s -> {
+            System.out.println("Series por categorias " + genre);
+            System.out.println("Title: " + s.getTitle() + ", Categoria: " + s.getGenre());
+        });
+
+    }
+
+    private void searchSeriesBySeasonAndEvaluation() {
+        System.out.println();
+        System.out.println("¿Filtrar séries con cuántas temporadas?");
+        var totalSeason = scanner.nextInt();
+        scanner.nextLine();
+
+        System.out.println("¿Como evaluación apartir de cuál valor? ");
+        var evaluation = scanner.nextDouble();
+        scanner.nextLine();
+
+        List<Series> filterSeries = repository
+                .findByTotalSeasonsLessThanEqualAndEvaluationGreaterThanEqual(totalSeason, evaluation);
+
+        System.out.println();
+        System.out.println("**** SERIES FILTRADAS ****");
+        filterSeries.forEach(s ->
+                System.out.println("Serie: " + s.getTitle() + " - Evaluation: " + s.getEvaluation())
+        );
+    }
 }
