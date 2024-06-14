@@ -1,9 +1,6 @@
 package com.jsrspring.screenmatch.main;
 
-import com.jsrspring.screenmatch.model.Episode;
-import com.jsrspring.screenmatch.model.SeasonData;
-import com.jsrspring.screenmatch.model.Series;
-import com.jsrspring.screenmatch.model.SeriesData;
+import com.jsrspring.screenmatch.model.*;
 import com.jsrspring.screenmatch.repository.SeriesRepository;
 import com.jsrspring.screenmatch.service.ApiService;
 import com.jsrspring.screenmatch.service.ConvertData;
@@ -45,6 +42,9 @@ public class MenuMain {
                      3.- Mostrar Series buscadas
                      4.- Buscar Series por Titulo
                      5.- Top 5 mejores Series en la BD
+                     6.- Buscar Serie por Categoria
+                     7.- Buscar Serie por cierto Numero de Temporadas
+                     8.- Buscar Serie por una Evaluacion en especifico
                     \s
                      0. Salir;
                     \s""";
@@ -74,6 +74,10 @@ public class MenuMain {
                 case 5:
                     //Buscar Top 5 de las mejores series en la BD
                     top5BestSeries();
+                    break;
+                case 6:
+                    //Buscar Serie por categoria
+                    searchSeriesByCategory();
                     break;
                 case 0:
                     System.out.println("Cerrando Aplicación....");
@@ -179,9 +183,25 @@ public class MenuMain {
             System.out.println();
             System.out.println("Top 5 series de la BD");
             topSeries.forEach(s ->
-                    System.out.println("Serie: " + s.getTitle() + " Evaluación: " + s.getEvaluation())
+                    System.out.println("Serie: " + s.getTitle() + ", Evaluación: " + s.getEvaluation())
             );
         } else System.out.println("No encontre series en la BD");
+    }
+
+    private void searchSeriesByCategory() {
+        System.out.println();
+        System.out.println("Escribe la Genero/Categoria de la serie a buscar");
+        var genre = scanner.nextLine();
+
+        var category = Category.fromEsp(genre);
+
+        List<Series> seriesByCategory = repository.findByGenre(category);
+
+        seriesByCategory.forEach(s -> {
+            System.out.println("Series por categorias " + genre);
+            System.out.println("Title: " + s.getTitle() + ", Categoria: " + s.getGenre());
+        });
+
     }
 
 }
