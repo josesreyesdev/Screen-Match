@@ -43,8 +43,7 @@ public class MenuMain {
                      4.- Buscar Series por Titulo
                      5.- Top 5 mejores Series en la BD
                      6.- Buscar Serie por Categoria
-                     7.- Buscar Serie por cierto Numero de Temporadas
-                     8.- Buscar Serie por una Evaluacion en especifico
+                     7.- Buscar Serie por cierto Numero de Temporadas y Evaluación especifica
                     \s
                      0. Salir;
                     \s""";
@@ -78,6 +77,10 @@ public class MenuMain {
                 case 6:
                     //Buscar Serie por categoria
                     searchSeriesByCategory();
+                    break;
+                case 7:
+                    //Buscar serie por num de temporadas y evaluacion minima
+                    searchSeriesBySeasonAndEvaluation();
                     break;
                 case 0:
                     System.out.println("Cerrando Aplicación....");
@@ -204,4 +207,23 @@ public class MenuMain {
 
     }
 
+    private void searchSeriesBySeasonAndEvaluation() {
+        System.out.println();
+        System.out.println("¿Filtrar séries con cuántas temporadas?");
+        var totalSeason = scanner.nextInt();
+        scanner.nextLine();
+
+        System.out.println("¿Como evaluación apartir de cuál valor? ");
+        var evaluation = scanner.nextDouble();
+        scanner.nextLine();
+
+        List<Series> filterSeries = repository
+                .findByTotalSeasonsLessThanEqualAndEvaluationGreaterThanEqual(totalSeason, evaluation);
+
+        System.out.println();
+        System.out.println("**** SERIES FILTRADAS ****");
+        filterSeries.forEach(s ->
+                System.out.println("Serie: " + s.getTitle() + " - Evaluation: " + s.getEvaluation())
+        );
+    }
 }
