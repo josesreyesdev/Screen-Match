@@ -43,6 +43,7 @@ public class MenuMain {
                      1.- Buscar una Serie
                      2.- Buscar Episodios
                      3.- Mostrar Series buscadas
+                     4.- Buscar Series por Titulo
                     \s
                      0. Salir;
                     \s""";
@@ -64,6 +65,10 @@ public class MenuMain {
                 case 3:
                     // Mostrar todas las seriesData buscadas
                     showSearchedSeries();
+                    break;
+                case 4:
+                    //Buscar series por titulo
+                    searchSeriesByTitle();
                     break;
                 case 0:
                     System.out.println("Cerrando Aplicación....");
@@ -150,4 +155,16 @@ public class MenuMain {
         } else System.out.println("Serie no encontrada");
     }
 
+    private void searchSeriesByTitle() {
+        System.out.println();
+        System.out.println("Escribe el nombre de la serie a buscar");
+        var seriesName = scanner.nextLine();
+
+        Optional<Series> searchedSeries = repository.findByTitleContainsIgnoreCase(seriesName);
+
+        if (searchedSeries.isPresent()) {
+            System.out.println();
+            System.out.println("Serie encontrada => " + searchedSeries.get());
+        } else System.out.println("No encontre la serie en la BD");
+    }
 }
