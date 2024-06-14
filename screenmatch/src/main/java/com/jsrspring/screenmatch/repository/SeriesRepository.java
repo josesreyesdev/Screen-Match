@@ -9,5 +9,5 @@ import java.util.Optional;
 public interface SeriesRepository extends JpaRepository<Series, Long> { // nombre de la entidad y el tipo del identificador
     Optional<Series> findByTitleContainsIgnoreCase(String seriesName);
 
-
+    List<Series> findTop5ByOrderByEvaluationDesc();
 }

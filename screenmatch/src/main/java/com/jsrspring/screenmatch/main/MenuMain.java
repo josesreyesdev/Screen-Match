@@ -44,6 +44,7 @@ public class MenuMain {
                      2.- Buscar Episodios
                      3.- Mostrar Series buscadas
                      4.- Buscar Series por Titulo
+                     5.- Top 5 mejores Series en la BD
                     \s
                      0. Salir;
                     \s""";
@@ -69,6 +70,10 @@ public class MenuMain {
                 case 4:
                     //Buscar series por titulo
                     searchSeriesByTitle();
+                    break;
+                case 5:
+                    //Buscar Top 5 de las mejores series en la BD
+                    top5BestSeries();
                     break;
                 case 0:
                     System.out.println("Cerrando Aplicación....");
@@ -167,4 +172,16 @@ public class MenuMain {
             System.out.println("Serie encontrada => " + searchedSeries.get());
         } else System.out.println("No encontre la serie en la BD");
     }
+
+    private void top5BestSeries() {
+        List<Series> topSeries = repository.findTop5ByOrderByEvaluationDesc();
+        if (!topSeries.isEmpty()) {
+            System.out.println();
+            System.out.println("Top 5 series de la BD");
+            topSeries.forEach(s ->
+                    System.out.println("Serie: " + s.getTitle() + " Evaluación: " + s.getEvaluation())
+            );
+        } else System.out.println("No encontre series en la BD");
+    }
+
 }
