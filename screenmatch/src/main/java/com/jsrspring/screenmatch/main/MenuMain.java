@@ -22,6 +22,7 @@ public class MenuMain {
     private static final String apiKey = Configuration.API_KEY;
 
     private List<Series> series;
+    private Optional<Series> searchedSeries;
 
     private final SeriesRepository repository;
 
@@ -43,7 +44,9 @@ public class MenuMain {
                      4.- Buscar Series por Titulo
                      5.- Top 5 mejores Series en la BD
                      6.- Buscar Serie por Categoria
-                     7.- Buscar Serie por cierto Numero de Temporadas y Evaluación especifica
+                     7.- Buscar Series por cierto Numero de Temporadas y su Evaluación
+                     8.- Buscar Episodios por Nombre
+                     9.- Top 5 Episodios por Serie
                     \s
                      0. Salir;
                     \s""";
@@ -79,8 +82,16 @@ public class MenuMain {
                     searchSeriesByCategory();
                     break;
                 case 7:
-                    //Buscar serie por num de temporadas y evaluacion minima
-                    searchSeriesBySeasonAndEvaluation();
+                    //Buscar serie por num de temporadas y su evaluacion
+                    filterSeriesByNumberOfSeasonsAndEvaluation();
+                    break;
+                case 8:
+                    //Buscar episodios por nombre
+                    searchEpisodesByTitle();
+                    break;
+                case 9:
+                    //Top 5 episodios por serie
+                    top5EpisodesBySeries();
                     break;
                 case 0:
                     System.out.println("Cerrando Aplicación....");
@@ -172,7 +183,7 @@ public class MenuMain {
         System.out.println("Escribe el nombre de la serie a buscar");
         var seriesName = scanner.nextLine();
 
-        Optional<Series> searchedSeries = repository.findByTitleContainsIgnoreCase(seriesName);
+        searchedSeries = repository.findByTitleContainsIgnoreCase(seriesName);
 
         if (searchedSeries.isPresent()) {
             System.out.println();
@@ -200,14 +211,16 @@ public class MenuMain {
 
         List<Series> seriesByCategory = repository.findByGenre(category);
 
-        seriesByCategory.forEach(s -> {
-            System.out.println("Series por categorias " + genre);
-            System.out.println("Title: " + s.getTitle() + ", Categoria: " + s.getGenre());
-        });
+        if (!seriesByCategory.isEmpty()) {
+            seriesByCategory.forEach(s -> {
+                System.out.println("Series por categorias " + genre);
+                System.out.println("Title: " + s.getTitle() + ", Categoria: " + s.getGenre());
+            });
+        } else System.out.println("no encontre series con la categoria: " + genre);
 
     }
 
-    private void searchSeriesBySeasonAndEvaluation() {
+    private void filterSeriesByNumberOfSeasonsAndEvaluation() {
         System.out.println();
         System.out.println("¿Filtrar séries con cuántas temporadas?");
         var totalSeason = scanner.nextInt();
@@ -218,12 +231,49 @@ public class MenuMain {
         scanner.nextLine();
 
         List<Series> filterSeries = repository
-                .findByTotalSeasonsLessThanEqualAndEvaluationGreaterThanEqual(totalSeason, evaluation);
+                .seriesBySeasonsAndEvaluation(totalSeason, evaluation);
 
+        if (!filterSeries.isEmpty()) {
+            System.out.println();
+            System.out.println("**** SERIES FILTRADAS ****");
+            filterSeries.forEach(s ->
+                    System.out.println("Serie: " + s.getTitle() + " - Evaluation: " + s.getEvaluation() + " - Total Seasons: " + s.getTotalSeasons())
+            );
+        } else System.out.println("No encontre series por el numero de temporadas: "+ totalSeason + "  y evaluación: " + evaluation);
+    }
+
+    private void searchEpisodesByTitle() {
         System.out.println();
-        System.out.println("**** SERIES FILTRADAS ****");
-        filterSeries.forEach(s ->
-                System.out.println("Serie: " + s.getTitle() + " - Evaluation: " + s.getEvaluation())
-        );
+        System.out.println("Escribe el episodio a consultar");
+        var episodeName = scanner.nextLine();
+
+        List<Episode> episodes = repository.getEpisodeByName(episodeName);
+
+        if (!episodes.isEmpty()) {
+            System.out.println();
+            System.out.println("+++***** Episodes Encontrados *****+++");
+            episodes.forEach(e ->
+                    System.out.printf("Serie: %s - Temporada: %s - Episodio: %s - Evaluacion: %s\n",
+                            e.getSeries().getTitle(), e.getSeason(), e.getEpisodeNumber(), e.getEvaluation())
+            );
+        } else System.out.println("No encontre episodios con este titulo: "+ episodeName);
+    }
+
+    private void top5EpisodesBySeries() {
+        searchSeriesByTitle();
+
+        if (searchedSeries.isPresent()) {
+            Series seriesName = searchedSeries.get();
+            List<Episode> topEpisodes = repository.getTop5Episodes(seriesName);
+
+            if (!topEpisodes.isEmpty()) {
+                System.out.println();
+                System.out.println("***** Top 5 episodios de la serie: " + seriesName.getTitle());
+                topEpisodes.forEach(e ->
+                        System.out.printf("Titulo: %s - Temporada: %s - Episodio: %s - Evaluacion: %s\n",
+                                e.getTitle(), e.getSeason(), e.getEpisodeNumber(), e.getEvaluation())
+                );
+            } else System.out.println("No encontre Episodios para esta serie: " + seriesName.getTitle());
+        }
     }
 }
