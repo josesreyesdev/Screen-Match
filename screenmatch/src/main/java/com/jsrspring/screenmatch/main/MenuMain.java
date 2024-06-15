@@ -22,6 +22,7 @@ public class MenuMain {
     private static final String apiKey = Configuration.API_KEY;
 
     private List<Series> series;
+    private Optional<Series> searchedSeries;
 
     private final SeriesRepository repository;
 
@@ -182,7 +183,7 @@ public class MenuMain {
         System.out.println("Escribe el nombre de la serie a buscar");
         var seriesName = scanner.nextLine();
 
-        Optional<Series> searchedSeries = repository.findByTitleContainsIgnoreCase(seriesName);
+        searchedSeries = repository.findByTitleContainsIgnoreCase(seriesName);
 
         if (searchedSeries.isPresent()) {
             System.out.println();
@@ -210,10 +211,12 @@ public class MenuMain {
 
         List<Series> seriesByCategory = repository.findByGenre(category);
 
-        seriesByCategory.forEach(s -> {
-            System.out.println("Series por categorias " + genre);
-            System.out.println("Title: " + s.getTitle() + ", Categoria: " + s.getGenre());
-        });
+        if (!seriesByCategory.isEmpty()) {
+            seriesByCategory.forEach(s -> {
+                System.out.println("Series por categorias " + genre);
+                System.out.println("Title: " + s.getTitle() + ", Categoria: " + s.getGenre());
+            });
+        } else System.out.println("no encontre series con la categoria: " + genre);
 
     }
 
@@ -230,11 +233,13 @@ public class MenuMain {
         List<Series> filterSeries = repository
                 .seriesBySeasonsAndEvaluation(totalSeason, evaluation);
 
-        System.out.println();
-        System.out.println("**** SERIES FILTRADAS ****");
-        filterSeries.forEach(s ->
-                System.out.println("Serie: " + s.getTitle() + " - Evaluation: " + s.getEvaluation() + " - Total Seasons: " + s.getTotalSeasons())
-        );
+        if (!filterSeries.isEmpty()) {
+            System.out.println();
+            System.out.println("**** SERIES FILTRADAS ****");
+            filterSeries.forEach(s ->
+                    System.out.println("Serie: " + s.getTitle() + " - Evaluation: " + s.getEvaluation() + " - Total Seasons: " + s.getTotalSeasons())
+            );
+        } else System.out.println("No encontre series por el numero de temporadas: "+ totalSeason + "  y evaluación: " + evaluation);
     }
 
     private void searchEpisodesByTitle() {
@@ -244,15 +249,31 @@ public class MenuMain {
 
         List<Episode> episodes = repository.getEpisodeByName(episodeName);
 
-        System.out.println();
-        System.out.println("+++***** Episodes Encontrados *****+++");
-        episodes.forEach(e ->
-            System.out.printf("Serie: %s - Temporada: %s - Episodio: %s - Evaluacion: %s\n",
-                    e.getSeries().getTitle(), e.getSeason(), e.getEpisodeNumber(), e.getEvaluation())
-        );
+        if (!episodes.isEmpty()) {
+            System.out.println();
+            System.out.println("+++***** Episodes Encontrados *****+++");
+            episodes.forEach(e ->
+                    System.out.printf("Serie: %s - Temporada: %s - Episodio: %s - Evaluacion: %s\n",
+                            e.getSeries().getTitle(), e.getSeason(), e.getEpisodeNumber(), e.getEvaluation())
+            );
+        } else System.out.println("No encontre episodios con este titulo: "+ episodeName);
     }
 
     private void top5EpisodesBySeries() {
+        searchSeriesByTitle();
 
+        if (searchedSeries.isPresent()) {
+            Series seriesName = searchedSeries.get();
+            List<Episode> topEpisodes = repository.getTop5Episodes(seriesName);
+
+            if (!topEpisodes.isEmpty()) {
+                System.out.println();
+                System.out.println("***** Top 5 episodios de la serie: " + seriesName.getTitle());
+                topEpisodes.forEach(e ->
+                        System.out.printf("Titulo: %s - Temporada: %s - Episodio: %s - Evaluacion: %s\n",
+                                e.getTitle(), e.getSeason(), e.getEpisodeNumber(), e.getEvaluation())
+                );
+            } else System.out.println("No encontre Episodios para esta serie: " + seriesName.getTitle());
+        }
     }
 }
