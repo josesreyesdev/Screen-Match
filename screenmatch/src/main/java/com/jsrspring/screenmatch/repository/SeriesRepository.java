@@ -1,6 +1,7 @@
 package com.jsrspring.screenmatch.repository;
 
 import com.jsrspring.screenmatch.model.Category;
+import com.jsrspring.screenmatch.model.Episode;
 import com.jsrspring.screenmatch.model.Series;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -28,4 +29,9 @@ public interface SeriesRepository extends JpaRepository<Series, Long> { // nombr
             "SELECT s FROM Series s WHERE s.totalSeasons <= :totalSeason And s.evaluation >= :evaluation"
     )
     List<Series> seriesBySeasonsAndEvaluation(int totalSeason, Double evaluation);
+
+    @Query(value = "SELECT e FROM Series s JOIN s.episodes e WHERE e.title ILIKE %:episodeName")
+    List<Episode> getEpisodeByName(String episodeName);
+
+
 }

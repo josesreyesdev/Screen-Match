@@ -86,7 +86,7 @@ public class MenuMain {
                     break;
                 case 8:
                     //Buscar episodios por nombre
-                    searchEpisodesByName();
+                    searchEpisodesByTitle();
                     break;
                 case 9:
                     //Top 5 episodios por serie
@@ -237,11 +237,20 @@ public class MenuMain {
         );
     }
 
-    private void searchEpisodesByName() {
+    private void searchEpisodesByTitle() {
+        System.out.println();
+        System.out.println("Escribe el episodio a consultar");
+        var episodeName = scanner.nextLine();
 
+        List<Episode> episodes = repository.getEpisodeByName(episodeName);
+
+        System.out.println();
+        System.out.println("+++***** Episodes Encontrados *****+++");
+        episodes.forEach(e ->
+            System.out.printf("Serie: %s - Temporada: %s - Episodio: %s - Evaluacion: %s\n",
+                    e.getSeries().getTitle(), e.getSeason(), e.getEpisodeNumber(), e.getEvaluation())
+        );
     }
 
-    private void top5EpisodesBySeries() {
 
-    }
 }
