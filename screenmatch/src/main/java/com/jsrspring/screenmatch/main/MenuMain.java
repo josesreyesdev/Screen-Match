@@ -43,7 +43,9 @@ public class MenuMain {
                      4.- Buscar Series por Titulo
                      5.- Top 5 mejores Series en la BD
                      6.- Buscar Serie por Categoria
-                     7.- Buscar Serie por cierto Numero de Temporadas y Evaluación especifica
+                     7.- Buscar Series por cierto Numero de Temporadas y su Evaluación
+                     8.- Buscar Episodios por Nombre
+                     9.- Top 5 Episodios por Serie
                     \s
                      0. Salir;
                     \s""";
@@ -79,8 +81,16 @@ public class MenuMain {
                     searchSeriesByCategory();
                     break;
                 case 7:
-                    //Buscar serie por num de temporadas y evaluacion minima
-                    searchSeriesBySeasonAndEvaluation();
+                    //Buscar serie por num de temporadas y su evaluacion
+                    filterSeriesByNumberOfSeasonsAndEvaluation();
+                    break;
+                case 8:
+                    //Buscar episodios por nombre
+                    searchEpisodesByName();
+                    break;
+                case 9:
+                    //Top 5 episodios por serie
+                    top5EpisodesBySeries();
                     break;
                 case 0:
                     System.out.println("Cerrando Aplicación....");
@@ -207,7 +217,7 @@ public class MenuMain {
 
     }
 
-    private void searchSeriesBySeasonAndEvaluation() {
+    private void filterSeriesByNumberOfSeasonsAndEvaluation() {
         System.out.println();
         System.out.println("¿Filtrar séries con cuántas temporadas?");
         var totalSeason = scanner.nextInt();
@@ -218,12 +228,20 @@ public class MenuMain {
         scanner.nextLine();
 
         List<Series> filterSeries = repository
-                .findByTotalSeasonsLessThanEqualAndEvaluationGreaterThanEqual(totalSeason, evaluation);
+                .seriesBySeasonsAndEvaluation(totalSeason, evaluation);
 
         System.out.println();
         System.out.println("**** SERIES FILTRADAS ****");
         filterSeries.forEach(s ->
-                System.out.println("Serie: " + s.getTitle() + " - Evaluation: " + s.getEvaluation())
+                System.out.println("Serie: " + s.getTitle() + " - Evaluation: " + s.getEvaluation() + " - Total Seasons: " + s.getTotalSeasons())
         );
+    }
+
+    private void searchEpisodesByName() {
+
+    }
+
+    private void top5EpisodesBySeries() {
+
     }
 }
