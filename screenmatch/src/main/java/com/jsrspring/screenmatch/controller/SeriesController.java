@@ -20,9 +20,5 @@ public class SeriesController {
     @GetMapping("/series")
     public List<Series> getSeries() {
         return repository.findAll();
-        /*series = repository.findAll()
-        if (!series.isEmpty()) {
-            return series;
-        } else return Collections.emptyList(); */
     }
 }
