@@ -4,25 +4,30 @@ import com.jsrspring.screenmatch.dto.SeriesDTO;
 import com.jsrspring.screenmatch.service.SeriesService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
-@RestController
+@RestController()
+@RequestMapping("/series")
 public class SeriesController {
 
     @Autowired
     private SeriesService service;
 
-    @GetMapping("/series")
+    @GetMapping()
     public List<SeriesDTO> getSeries() {
         return service.getSeries();
     }
 
-    @GetMapping("/series/top5")
+    @GetMapping("/top5")
     public List<SeriesDTO> getTop5Series() {
         return service.getTop5Series();
     }
 
-
+    @GetMapping("lanzamientos")
+    public List<SeriesDTO> getLatestReleases() {
+        return service.getLatestReleasesSeries();
+    }
 }

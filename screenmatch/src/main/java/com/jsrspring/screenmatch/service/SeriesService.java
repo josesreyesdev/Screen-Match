@@ -16,13 +16,15 @@ public class SeriesService {
     private SeriesRepository repository;
 
     public List<SeriesDTO> getSeries() {
-        var series = repository.findAll();
-        return convertSeriesToSeriesDTO(series);
+        return convertSeriesToSeriesDTO(repository.findAll());
     }
 
     public List<SeriesDTO> getTop5Series() {
-        var series = repository.findTop5ByOrderByEvaluationDesc();
-        return convertSeriesToSeriesDTO(series);
+        return convertSeriesToSeriesDTO(repository.findTop5ByOrderByEvaluationDesc());
+    }
+
+    public List<SeriesDTO> getLatestReleasesSeries() {
+        return convertSeriesToSeriesDTO(repository.getLatestReleases());
     }
 
     private List<SeriesDTO> convertSeriesToSeriesDTO(List<Series> series) {
@@ -32,6 +34,5 @@ public class SeriesService {
                 ).
                 collect(Collectors.toList());
     }
-
 
 }

@@ -35,4 +35,8 @@ public interface SeriesRepository extends JpaRepository<Series, Long> { // nombr
 
     @Query(value = "SELECT e FROM Series s JOIN s.episodes e WHERE s = :series ORDER BY e.evaluation DESC LIMIT 5")
     List<Episode> getTop5Episodes(Series series);
+
+    // obtener ultimos lanzamientos
+    @Query(value = "SELECT s FROM Series s JOIN s.episodes e GROUP BY s ORDER BY MAX(e.releaseDate) DESC LIMIT 10")
+    List<Series> getLatestReleases();
 }
