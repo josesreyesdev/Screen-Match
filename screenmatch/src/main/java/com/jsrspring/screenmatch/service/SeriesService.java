@@ -2,6 +2,7 @@ package com.jsrspring.screenmatch.service;
 
 import com.jsrspring.screenmatch.dto.EpisodeDTO;
 import com.jsrspring.screenmatch.dto.SeriesDTO;
+import com.jsrspring.screenmatch.model.Category;
 import com.jsrspring.screenmatch.model.Episode;
 import com.jsrspring.screenmatch.model.Series;
 import com.jsrspring.screenmatch.repository.SeriesRepository;
@@ -74,5 +75,10 @@ public class SeriesService {
         return episodes.stream().
                 map(e -> new EpisodeDTO(e.getSeason(), e.getTitle(), e.getEpisodeNumber())).
                 collect(Collectors.toList());
+    }
+
+    public List<SeriesDTO> getSeriesByCategory(String genre) {
+        Category category = Category.fromEsp(genre);
+        return convertSeriesToSeriesDTO(repository.findByGenre(category));
     }
 }
