@@ -1,6 +1,5 @@
 package com.jsrspring.screenmatch.repository;
 
-import com.jsrspring.screenmatch.dto.EpisodeDTO;
 import com.jsrspring.screenmatch.model.Category;
 import com.jsrspring.screenmatch.model.Episode;
 import com.jsrspring.screenmatch.model.Series;
