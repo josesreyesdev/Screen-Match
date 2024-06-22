@@ -60,10 +60,14 @@ public class SeriesService {
             var s = series.get();
             return convertEpisodeToEpisodeDTO(s.getEpisodes());
         } else {
-            System.out.println("Serie no disponible, intente de nuevo");
+            System.out.println("Temporadas no disponible, intente de nuevo");
             return null;
         }
+    }
 
+    public List<EpisodeDTO> getSeasonBySeasonNumber(Long id, Long seasonNumber) {
+        var episodes = repository.getSeasonBySeasonNumber(id, seasonNumber);
+        return convertEpisodeToEpisodeDTO(episodes);
     }
 
     private List<EpisodeDTO> convertEpisodeToEpisodeDTO(List<Episode> episodes) {

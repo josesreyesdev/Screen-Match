@@ -1,5 +1,6 @@
 package com.jsrspring.screenmatch.repository;
 
+import com.jsrspring.screenmatch.dto.EpisodeDTO;
 import com.jsrspring.screenmatch.model.Category;
 import com.jsrspring.screenmatch.model.Episode;
 import com.jsrspring.screenmatch.model.Series;
@@ -40,5 +41,10 @@ public interface SeriesRepository extends JpaRepository<Series, Long> { // nombr
     @Query(value = "SELECT s FROM Series s JOIN s.episodes e GROUP BY s ORDER BY MAX(e.releaseDate) DESC LIMIT 10")
     List<Series> getLatestReleases();
 
+    //obtener serie por id
     Optional<Series> findSeriesById(Long id);
+
+    //obtener temporada por numero de temporada
+    @Query(value = "SELECT e FROM Series s JOIN s.episodes e WHERE s.id = :id AND e.season = :seasonNumber")
+    List<Episode> getSeasonBySeasonNumber(Long id, Long seasonNumber);
 }
