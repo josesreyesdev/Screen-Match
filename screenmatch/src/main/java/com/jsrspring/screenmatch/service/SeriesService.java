@@ -1,6 +1,8 @@
 package com.jsrspring.screenmatch.service;
 
+import com.jsrspring.screenmatch.dto.EpisodeDTO;
 import com.jsrspring.screenmatch.dto.SeriesDTO;
+import com.jsrspring.screenmatch.model.Episode;
 import com.jsrspring.screenmatch.model.Series;
 import com.jsrspring.screenmatch.repository.SeriesRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,12 +45,30 @@ public class SeriesService {
     private SeriesDTO convertSeriesToSeriesDTO2(Optional<Series> series) {
 
         if (series.isPresent()) {
-            var s = series.get();
+            Series s = series.get();
             return new SeriesDTO(s.getId(), s.getTitle(), s.getTotalSeasons(), s.getEvaluation(),
                     s.getPoster(), s.getGenre(), s.getActors(), s.getSynopsis());
         } else {
             System.out.println("No encontre la serie con ese id");
             return null;
         }
+    }
+
+    public List<EpisodeDTO> getAllSeasons(Long id) {
+        Optional<Series> series = repository.findSeriesById(id);
+        if (series.isPresent()) {
+            var s = series.get();
+            return convertEpisodeToEpisodeDTO(s.getEpisodes());
+        } else {
+            System.out.println("Serie no disponible, intente de nuevo");
+            return null;
+        }
+
+    }
+
+    private List<EpisodeDTO> convertEpisodeToEpisodeDTO(List<Episode> episodes) {
+        return episodes.stream().
+                map(e -> new EpisodeDTO(e.getSeason(), e.getTitle(), e.getEpisodeNumber())).
+                collect(Collectors.toList());
     }
 }

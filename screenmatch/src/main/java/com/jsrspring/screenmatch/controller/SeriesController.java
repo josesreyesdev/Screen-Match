@@ -1,5 +1,6 @@
 package com.jsrspring.screenmatch.controller;
 
+import com.jsrspring.screenmatch.dto.EpisodeDTO;
 import com.jsrspring.screenmatch.dto.SeriesDTO;
 import com.jsrspring.screenmatch.service.SeriesService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,4 +38,8 @@ public class SeriesController {
         return service.getSeriesById(id);
     }
 
+    @GetMapping("/{id}/temporadas/todas")
+    public List<EpisodeDTO> getAllSeasons(@PathVariable Long id) {
+        return service.getAllSeasons(id);
+    }
 }

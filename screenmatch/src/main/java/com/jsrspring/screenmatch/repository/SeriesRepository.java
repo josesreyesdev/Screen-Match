@@ -41,5 +41,4 @@ public interface SeriesRepository extends JpaRepository<Series, Long> { // nombr
     List<Series> getLatestReleases();
 
     Optional<Series> findSeriesById(Long id);
-
 }
